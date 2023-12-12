@@ -118,6 +118,7 @@ export const updateUser = asyncHandler(async (id, updatedData) => {
     });
     console.log(success);
     return success;
-  });
+    
+});
 
 
