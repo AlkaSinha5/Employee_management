@@ -3,7 +3,7 @@ import express from "express";
 // import axios from "axios";
 import database from "./config/mongodb.js";
 import routes from "./routes/index.js";
-// import fileUpload from "express-fileupload";
+import fileUpload from "express-fileupload";
 
 // import { errorHandler } from "./helpers/errorHandler.js";
 // import cookieParser from "cookie-parser";
@@ -13,9 +13,9 @@ import cors from "cors";
 
 const app = express();
 database();
-// app.use(fileUpload({
-//   useTempFiles:true
-// }))
+app.use(fileUpload({
+  useTempFiles:true
+}))
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));

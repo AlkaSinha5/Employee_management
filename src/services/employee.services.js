@@ -1,37 +1,50 @@
 import asyncHandler from "express-async-handler";
 import Employee from "../modles/employeeSchema.js";
+import { v2 as cloudinary } from "cloudinary";
 
 
-export const addEmployee = asyncHandler(async (req, res) => {
+cloudinary.config({
+    cloud_name: "dhzk0ztrn",
+    api_key: "571339484391153",
+    api_secret: "WWmOJpVF5y02r7Blu2oAr0RxbU0",
+  });
+  export const addEmployee = asyncHandler(async (req, res) => {
     try {
-        const {   
+      const {
         UserID,
         FirstName,
         LastName,
         Email,
         PhoneNumber,
-        ProfilePicture,
-        jobType,  } = req.body;
+        jobType,
+      } = req.body;
+
     
-const employee = await Employee.create({
-    UserID,
-    FirstName,
-    LastName,
-    Email,
-    PhoneNumber,
-    ProfilePicture,
-    jobType, 
-        });
+    //   console.log(req.headers)
+      const file = req.files.ProfilePicture; 
+      
   
-        res.status(201).json({
-            success: true,
-            data: employee,
-        });
+      const result = await cloudinary.uploader.upload(file.tempFilePath);
+  
+      const employee = await Employee.create({
+        UserID,
+        FirstName,
+        LastName,
+        Email,
+        PhoneNumber,
+        jobType,
+        ProfilePicture: result.secure_url, 
+      });
+  
+      res.status(201).json({
+        success: true,
+        data: employee,
+      });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message,
-        });
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
     }
   });
 
