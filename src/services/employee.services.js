@@ -18,13 +18,28 @@ cloudinary.config({
         PhoneNumber,
         jobType,
         joiningDate,
-    companyName,
+        companyName,
       } = req.body;
-
-    
-    //   console.log(req.headers)
-      const file = req.files.ProfilePicture; 
-      
+  
+      const file = req.files.ProfilePicture;
+  
+      if (!file) {
+        return res.status(400).json({
+          success: false,
+          error: "ProfilePicture is required.",
+        });
+      }
+  
+      // Ensure that joiningDate is a valid Date object or a valid date string
+      const isValidDate =
+        joiningDate && !isNaN(new Date(joiningDate).getTime());
+  
+      if (!isValidDate) {
+        return res.status(400).json({
+          success: false,
+          error: "joiningDate is not a valid date.",
+        });
+      }
   
       const result = await cloudinary.uploader.upload(file.tempFilePath);
   
@@ -37,7 +52,7 @@ cloudinary.config({
         jobType,
         joiningDate,
         companyName,
-        ProfilePicture: result.secure_url, 
+        ProfilePicture: result.secure_url,
       });
   
       res.status(201).json({
