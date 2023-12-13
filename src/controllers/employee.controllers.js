@@ -27,7 +27,7 @@ export const GetEmployee = asyncHandler(async (req, res) => {
       const filter = {
         $or: [
           { FirstName: { $regex: search || "", $options: "i" } },
-          { LastName: { $regex: search || "", $options: "i" } },
+        //   { LastName: { $regex: search || "", $options: "i" } },
           // Add more conditions if needed
         ],
       };
@@ -36,9 +36,11 @@ export const GetEmployee = asyncHandler(async (req, res) => {
       const sortByField = sortingOptions[0];
       const sortDirection = sortingOptions[1];
       const sortBy = {};
-      if (sortByField) {
-        sortBy[sortByField] = sortDirection;
-      }
+    if (sortByField) {
+      sortBy[sortByField] = sortDirection;
+    } else {
+      sortBy.FirstName = 1;
+    }
   
       const result = await getEmployee(paginationOptions, filter, sortBy);
       res.status(200).send(result);
