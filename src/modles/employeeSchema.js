@@ -9,6 +9,8 @@ const employeeSchema = new mongoose.Schema({
     PhoneNumber: { type: String },
     ProfilePicture: { type: String }, 
     jobType: { type: String },
+    // joiningDate:{type: Date},
+
   
     
   });
