@@ -26,8 +26,8 @@ export const GetEmployee = asyncHandler(async (req, res) => {
   
       const filter = {
         $or: [
-          { FirstName: { $regex: search || "", $options: "i" } },
-        //   { LastName: { $regex: search || "", $options: "i" } },
+         { FirstName: { $regex: search || "", $options: "i" } },
+          { LastName: { $regex: search || "", $options: "i" } },
           // Add more conditions if needed
         ],
       };
