@@ -7,6 +7,8 @@ const router =express.Router();
 const validateAttendence = (req, res, next) => {
     const { error } = attendanceSchema.validate(req.body);
   
+
+    
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
