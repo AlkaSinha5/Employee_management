@@ -57,12 +57,9 @@ export const GetEmployee = asyncHandler(async (req, res) => {
   });
   
   export const UpdateEmployee = asyncHandler(async (req, res) => {
-    const id = req.params.id;
-    const updatedData = req.body;
-    const success = await updateEmployee(id, updatedData, {
-      new: true,
-    });
-    res.status(200).send({ success });
+    
+    const success = await updateEmployee(req,res);
+    
   });
   
   export const GetEmployeeById = asyncHandler(async (req, res) => {

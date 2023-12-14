@@ -7,8 +7,17 @@ const attendanceSchema = new mongoose.Schema({
   GeolocationTracking: [
     {
       timestamp: { type: Date },
-      latitude: { type: Number},
-      longitude: { type: Number },
+      location: {
+        type: {
+          type: String,
+          enum: ['Point'],
+          default: 'Point',
+        },
+        coordinates: {
+          type: [Number],
+          required: true,
+        },
+      },
     },
   ],
   Status: {
@@ -18,6 +27,7 @@ const attendanceSchema = new mongoose.Schema({
   Photo: { type: String },
 });
 
+// Add a 2dsphere index on the 'GeolocationTracking.location' field
 attendanceSchema.index({ 'GeolocationTracking.location': '2dsphere' });
 
 export default mongoose.model('Attendance', attendanceSchema);
