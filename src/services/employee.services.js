@@ -117,39 +117,41 @@ export const getEmployeeById = asyncHandler(async (id) => {
     return success;
   });
   
-  export const updateEmployee = asyncHandler(async (req, res) => {
-    try {
-      const id = req.params.id;
-      const updatedData = req.body;
-  
-      if (req.files && req.files.ProfilePicture) {
-        const file = req.files.ProfilePicture;
-        const result = await cloudinary.uploader.upload(file.tempFilePath);
-        updatedData.ProfilePicture = result.secure_url;
-      }
-  
-      const updatedEmployee = await Employee.findByIdAndUpdate(
-        id,
-        updatedData,
-        { new: true }
-      );
-  
-      if (!updatedEmployee) {
-        return res.status(404).json({
-          success: false,
-          error: "Employee not found",
-        });
-      }
-  
-      res.status(200).json({
-        success: true,
-        data: updatedEmployee,
-      });
-    } catch (error) {
-      res.status(400).json({
+ export const updateEmployee = asyncHandler(async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updatedData = req.body;
+
+    if (req.files && req.files.ProfilePicture) {
+      const file = req.files.ProfilePicture;
+      const result = await cloudinary.uploader.upload(file.tempFilePath);
+      updatedData.ProfilePicture = result.secure_url;
+    }
+
+    const updatedEmployee = await Employee.findByIdAndUpdate(
+      id,
+      updatedData,
+      { new: true }
+    );
+
+    if (!updatedEmployee) {
+      return res.status(404).json({
         success: false,
-        error: error.message,
+        error: "Employee not found",
       });
     }
-  });
+
+    res.status(200).json({
+      success: true,
+      data: updatedEmployee,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+
 
