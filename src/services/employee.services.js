@@ -143,6 +143,7 @@ export const getEmployeeById = asyncHandler(async (id) => {
         error: "Employee not found",
       });
     }
+    
 
     res.status(200).json({
       success: true,
