@@ -1,20 +1,20 @@
 import  express  from "express";
 import { AddAttendence, DeleteAttendence, GetAttendence, GetAttendenceById, UpdateAttendence } from "../controllers/attendence.controllers.js";
-// import attendanceSchema from "../validators/attendance.validators.js"
+import { attendanceSchema } from "../validators/attendance.validators.js";
+
 
 
 const router =express.Router();
-const validateAttendence = (req, res, next) => {
-    const { error } = attendanceSchema.validate(req.body);
-  
+const validatattendence = (req, res, next) => {
+  const { error } = attendanceSchema.validate(req.body);
 
-    
-    if (error) {
-      return res.status(400).json({ error: error.details[0].message });
-    }
-  
-    next();
-  };
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  next();
+};
+
 
 router.post("/addAttendence", AddAttendence);
 router.get("/getAttendence" ,GetAttendence);
