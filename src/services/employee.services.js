@@ -12,6 +12,7 @@ cloudinary.config({
     try {
       const {
         UserID,
+        AttendenceID,
         FirstName,
         LastName,
         Email,
@@ -45,6 +46,7 @@ cloudinary.config({
   
       const employee = await Employee.create({
         UserID,
+        AttendenceID,
         FirstName,
         LastName,
         Email,
@@ -83,7 +85,8 @@ cloudinary.config({
       .collation(collation)
       .sort(sort)
       .skip(skip)
-      .limit(size);
+      .limit(size)
+      .populate('AttendenceID');
   
       return {
         page,

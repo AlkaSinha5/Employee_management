@@ -21,7 +21,7 @@ export const GetEmployee = asyncHandler(async (req, res) => {
   
       const paginationOptions = {
         page: parseInt(page) || 1,
-        size: parseInt(size) || 10,
+        size: parseInt(size) || 100,
       };
   
       const filter = {
