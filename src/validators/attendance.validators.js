@@ -1,20 +1,13 @@
 import Joi from 'joi';
 
 const attendanceSchema = Joi.object({
-  EmployeeID: Joi.string().hex().length(24).required(), // Assuming a valid ObjectId
-  ClockInDateTime: Joi.date().required(),
-  ClockOutDateTime: Joi.date().required(),
-  GeolocationTracking: Joi.array().items(
-    Joi.object({
-      timestamp: Joi.date().required(),
-      location: Joi.object({
-        type: Joi.string().valid('Point').default('Point'),
-        coordinates: Joi.array().items(Joi.number()).required(),
-      }),
-    })
-  ),
-  Status: Joi.string().valid('present', 'absent', 'leave').required(),
+  EmployeeID: Joi.string(),
+  ClockInDateTime: Joi.date(),
+  ClockOutDateTime: Joi.date(),
+  GeolocationTracking: Joi.array(),
+  Status: Joi.string().valid('Present', 'Absent', 'Leave'),
   Photo: Joi.string(),
+  attendenceDate: Joi.date(),
 });
 
 export { attendanceSchema };

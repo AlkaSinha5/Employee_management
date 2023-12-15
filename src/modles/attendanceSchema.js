@@ -22,12 +22,13 @@ const attendanceSchema = new mongoose.Schema({
   ],
   Status: {
     type: String,
-    enum: ['present', 'absent', 'leave'],
+    enum: ['Present', 'Absent', 'Leave'],
   },
   Photo: { type: String },
+  attendenceDate: {type: Date},
 });
 
-// Add a 2dsphere index on the 'GeolocationTracking.location' field
+
 attendanceSchema.index({ 'GeolocationTracking.location': '2dsphere' });
 
 export default mongoose.model('Attendance', attendanceSchema);

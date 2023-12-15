@@ -11,6 +11,7 @@ export const addAttendance = asyncHandler(async (req, res) => {
       GeolocationTracking,
       Status,
       Photo,
+      attendenceDate,
     } = req.body;
 
     // Check if GeolocationTracking is an array and not empty
@@ -36,6 +37,7 @@ export const addAttendance = asyncHandler(async (req, res) => {
       GeolocationTracking: mappedGeolocation,
       Status,
       Photo,
+      attendenceDate,
     });
 
     res.status(201).json({
