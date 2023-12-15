@@ -44,7 +44,7 @@ export const addUser = asyncHandler(async (req, res) => {
             username: user.FirstName,
             email: user.Email,
             id: user.id,
-            // roleId: user.roleId,
+            roleId: user.roleId,
           },
           
         },
@@ -79,7 +79,7 @@ export const getUsers = asyncHandler(async (paginationOptions,filter,sort) => {
     .sort(sort)
     .skip(skip)
     .limit(size)
-    // .populate('roleId');
+    .populate('roleId');
 
     return {
       page,
@@ -106,8 +106,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
   });
   
 export const getUserById = asyncHandler(async (id) => {
-    // const success = await User.findById(id).populate('roleId');
-    const success = await User.findById(id);
+    const success = await User.findById(id).populate('roleId');
     console.log(success);
     return success;
   });
