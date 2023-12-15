@@ -63,10 +63,14 @@ export const getAttendence = asyncHandler(async (paginationOptions,filter,sort) 
     };
 
     const success = await Attendance.find(filter)
+    .populate('EmployeeID')
     .collation(collation)
     .sort(sort)
     .skip(skip)
     .limit(size);
+
+    console.log(success)
+    
 
     return {
       page,
@@ -95,7 +99,8 @@ export const deleteAttendence = asyncHandler(async (req, res) => {
 });
 
 export const getAttendenceById = asyncHandler(async (id) => {
-  const success = await Attendance.findById(id);
+  const success = await Attendance.findById(id)
+  .populate("EmployeeID");
   console.log(success);
   return success;
 });
