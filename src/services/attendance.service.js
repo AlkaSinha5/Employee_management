@@ -142,3 +142,55 @@ export const updateAttendence = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+
+export const getAttendenceCount = asyncHandler(async (req,res) => {
+  try {
+    const { date } = req.query; 
+
+    
+    if (!date) {
+      return res.status(400).json({ error: 'Date parameter is required' });
+    }
+
+    const attendanceCount = await Attendance.aggregate([
+      {
+        $match: {
+          attendenceDate: new Date(date),
+        },
+      },
+      {
+        $group: {
+          _id: '$Status',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    
+    const defaultResult = {
+      date,
+      attendanceCount: [
+        { _id: 'Present', count: 0 },
+        { _id: 'Absent', count: 0 },
+        { _id: 'Leave', count: 0 },
+      ],
+    };
+
+   
+    const result = {
+      date,
+      attendanceCount: defaultResult.attendanceCount.map((defaultItem) => {
+        const foundItem = attendanceCount.find((item) => item._id === defaultItem._id);
+        return foundItem || defaultItem;
+      }),
+    };
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+ 
+});
