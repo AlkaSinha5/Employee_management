@@ -22,27 +22,37 @@ cloudinary.config({
         companyName,
       } = req.body;
   
-      const file = req.files.ProfilePicture;
+      // const file = req.files.ProfilePicture;
+      // const result = await cloudinary.uploader.upload(file.tempFilePath);
+      let profilePictureUrl = ""; 
+
+      if (req.files && req.files.ProfilePicture) {
+        const file = req.files.ProfilePicture;
+        const result = await cloudinary.uploader.upload(file.tempFilePath);
+        profilePictureUrl = result.secure_url;
+      }
   
-      if (!file) {
+  
+      // const isValidDate =
+      //   joiningDate && !isNaN(new Date(joiningDate).getTime());
+  
+      // if (!isValidDate) {
+      //   return res.status(400).json({
+      //     success: false,
+      //     error: "joiningDate is not a valid date.",
+      //   });
+      // }
+  
+      // Check if the email is unique
+      const existingEmployee = await Employee.findOne({ Email });
+      if (existingEmployee) {
         return res.status(400).json({
           success: false,
-          error: "ProfilePicture is required.",
+          error: "Email is already in use.",
         });
       }
   
-      // Ensure that joiningDate is a valid Date object or a valid date string
-      const isValidDate =
-        joiningDate && !isNaN(new Date(joiningDate).getTime());
-  
-      if (!isValidDate) {
-        return res.status(400).json({
-          success: false,
-          error: "joiningDate is not a valid date.",
-        });
-      }
-  
-      const result = await cloudinary.uploader.upload(file.tempFilePath);
+    
   
       const employee = await Employee.create({
         UserID,
@@ -54,7 +64,7 @@ cloudinary.config({
         jobType,
         joiningDate,
         companyName,
-        ProfilePicture: result.secure_url,
+        ProfilePicture: profilePictureUrl,
       });
   
       res.status(201).json({
@@ -68,6 +78,8 @@ cloudinary.config({
       });
     }
   });
+  
+
 
   export const getEmployee = asyncHandler(async (paginationOptions,filter,sort) => {
     try {

@@ -1,7 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Attendance from "../modles/attendanceSchema.js";
 
-
 export const addAttendance = asyncHandler(async (req, res) => {
   try {
     const {
@@ -10,7 +9,6 @@ export const addAttendance = asyncHandler(async (req, res) => {
       ClockOutDateTime,
       GeolocationTracking,
       Status,
-      Photo,
       attendenceDate,
     } = req.body;
 
@@ -30,13 +28,22 @@ export const addAttendance = asyncHandler(async (req, res) => {
       },
     }));
 
+    let photoUrl = ""; // Initialize to an empty string
+
+    // Check if Photo is provided in the request
+    if (req.files && req.files.Photo) {
+      const file = req.files.Photo;
+      const result = await cloudinary.uploader.upload(file.tempFilePath);
+      photoUrl = result.secure_url;
+    }
+
     const attendance = await Attendance.create({
       EmployeeID,
       ClockInDateTime,
       ClockOutDateTime,
       GeolocationTracking: mappedGeolocation,
       Status,
-      Photo,
+      Photo: photoUrl,
       attendenceDate,
     });
 
@@ -51,6 +58,7 @@ export const addAttendance = asyncHandler(async (req, res) => {
     });
   }
 });
+
 
 export const getAttendence = asyncHandler(async (paginationOptions,filter,sort) => {
   try {

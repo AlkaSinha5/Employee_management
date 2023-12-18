@@ -14,10 +14,10 @@ const validatemployee = (req, res, next) => {
     next();
   };
 
-router.post("/addEmployee", AddEmployee);
+router.post("/addEmployee",validatemployee, AddEmployee);
 router.get("/getEmployee" ,GetEmployee);
 router.delete("/deteteEmployee/:id", DeleteEmployee);
-router.put("/updateEmployee/:id", UpdateEmployee);
+router.put("/updateEmployee/:id",validatemployee, UpdateEmployee);
 router.get("/getEmployeeById/:id",  GetEmployeeById);
 
 
