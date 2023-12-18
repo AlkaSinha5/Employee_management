@@ -1,5 +1,65 @@
 import asyncHandler from "express-async-handler";
 import Attendance from "../modles/attendanceSchema.js";
+import path from "path";
+import fs from "fs";
+
+// export const addAttendance = asyncHandler(async (req, res) => {
+//   try {
+//     const {
+//       EmployeeID,
+//       ClockInDateTime,
+//       ClockOutDateTime,
+//       GeolocationTracking,
+//       Status,
+//       attendenceDate,
+//     } = req.body;
+
+//     // Check if GeolocationTracking is an array and not empty
+//     // if (!Array.isArray(GeolocationTracking) || GeolocationTracking.length === 0) {
+//     //   return res.status(400).json({
+//     //     success: false,
+//     //     error: "GeolocationTracking must be a non-empty array.",
+//     //   });
+//     // }
+
+//     const mappedGeolocation = GeolocationTracking.map(track => ({
+//       timestamp: track.timestamp,
+//       location: {
+//         type: "Point",
+//         coordinates: [track.longitude, track.latitude],
+//       },
+//     }));
+
+//     let photoUrl = ""; // Initialize to an empty string
+
+//     // Check if Photo is provided in the request
+//     if (req.files && req.files.Photo) {
+//       const file = req.files.Photo;
+//       const result = await cloudinary.uploader.upload(file.tempFilePath);
+//       photoUrl = result.secure_url;
+//     }
+
+//     const attendance = await Attendance.create({
+//       EmployeeID,
+//       ClockInDateTime,
+//       ClockOutDateTime,
+//       GeolocationTracking: mappedGeolocation,
+//       Status,
+//       Photo: photoUrl,
+//       attendenceDate,
+//     });
+//     deleteFile()
+//     res.status(201).json({
+//       success: true,
+//       data: attendance,
+//     });
+//   } catch (error) {
+//     res.status(400).json({
+//       success: false,
+//       error: error.message,
+//     });
+//   }
+// });
 
 export const addAttendance = asyncHandler(async (req, res) => {
   try {
@@ -12,21 +72,8 @@ export const addAttendance = asyncHandler(async (req, res) => {
       attendenceDate,
     } = req.body;
 
-    // Check if GeolocationTracking is an array and not empty
-    if (!Array.isArray(GeolocationTracking) || GeolocationTracking.length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: "GeolocationTracking must be a non-empty array.",
-      });
-    }
 
-    const mappedGeolocation = GeolocationTracking.map(track => ({
-      timestamp: track.timestamp,
-      location: {
-        type: "Point",
-        coordinates: [track.longitude, track.latitude],
-      },
-    }));
+    
 
     let photoUrl = ""; // Initialize to an empty string
 
@@ -41,12 +88,12 @@ export const addAttendance = asyncHandler(async (req, res) => {
       EmployeeID,
       ClockInDateTime,
       ClockOutDateTime,
-      GeolocationTracking: mappedGeolocation,
+      GeolocationTracking,
       Status,
       Photo: photoUrl,
       attendenceDate,
     });
-
+    //  deleteFile()
     res.status(201).json({
       success: true,
       data: attendance,
@@ -66,6 +113,7 @@ export const getAttendence = asyncHandler(async (paginationOptions,filter,sort) 
     const totalDocuments = await Attendance.countDocuments(filter);
     const totalPages = Math.ceil(totalDocuments / size);
     const skip = (page - 1) * size;
+
 
     const collation = {
       locale: 'en',  
@@ -153,6 +201,7 @@ export const updateAttendence = asyncHandler(async (req, res) => {
 
 
 
+
 export const getAttendenceCount = asyncHandler(async (req,res) => {
   try {
     const { date } = req.query; 
@@ -202,3 +251,28 @@ export const getAttendenceCount = asyncHandler(async (req,res) => {
   }
  
 });
+
+const deleteFile = () => {
+  const __filename = new URL(import.meta.url).pathname;
+  const __dirname = path.dirname(__filename);
+
+  const dirPath = decodeURIComponent(
+    path.join(__dirname, "../../tmp").slice(1).replace(/\\/g, "/")
+  );
+
+  if (fs.existsSync(dirPath)) {
+    // Read the contents of the directory
+    const files = fs.readdirSync(dirPath);
+
+    // Iterate over the files and remove them
+    files.forEach((file) => {
+      const curPath = path.join(dirPath, file);
+      fs.unlinkSync(curPath);
+    });
+
+    // Remove the empty directory
+    fs.rmdirSync(dirPath);
+  } else {
+    console.log(`Directory '${dirPath}' does not exist.`);
+  }
+};
