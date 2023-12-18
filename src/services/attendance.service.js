@@ -94,7 +94,7 @@ export const addAttendance = asyncHandler(async (req, res) => {
       Photo: photoUrl,
       attendenceDate,
     });
-    //  deleteFile()
+      deleteFile()
     res.status(201).json({
       success: true,
       data: attendance,
