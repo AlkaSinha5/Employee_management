@@ -33,7 +33,7 @@ import mongoose from 'mongoose';
 const attendanceSchema = new mongoose.Schema({
   EmployeeID: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
   ClockInDateTime: { type: Date },
-  ClockOutDateTime: { type: Date },
+  // ClockOutDateTime: { type: Date },
   GeolocationTracking: {
     type :String,
   },
