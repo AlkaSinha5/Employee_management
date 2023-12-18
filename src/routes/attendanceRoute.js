@@ -15,7 +15,6 @@ const validatattendence = (req, res, next) => {
   next();
 };
 
-
 router.post("/addAttendence" , AddAttendence);
 router.get("/getAttendence" ,GetAttendence);
 router.delete("/deteteAttendence/:id", DeleteAttendence);
