@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Attendance from "../modles/attendanceSchema.js";
+import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 import fs from "fs";
 
@@ -66,7 +67,7 @@ export const addAttendance = asyncHandler(async (req, res) => {
     const {
       EmployeeID,
       ClockInDateTime,
-      ClockOutDateTime,
+      // ClockOutDateTime,
       GeolocationTracking,
       Status,
       attendenceDate,
@@ -87,7 +88,7 @@ export const addAttendance = asyncHandler(async (req, res) => {
     const attendance = await Attendance.create({
       EmployeeID,
       ClockInDateTime,
-      ClockOutDateTime,
+      // ClockOutDateTime,
       GeolocationTracking,
       Status,
       Photo: photoUrl,
