@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler";
 import Employee from "../modles/employeeSchema.js";
 import { v2 as cloudinary } from "cloudinary";
+import path from "path";
+import fs from "fs";
 
 
 cloudinary.config({
@@ -66,7 +68,7 @@ cloudinary.config({
         companyName,
         ProfilePicture: profilePictureUrl,
       });
-  
+      deleteFile()
       res.status(201).json({
         success: true,
         data: employee,
@@ -169,5 +171,29 @@ export const getEmployeeById = asyncHandler(async (id) => {
   }
 });
 
+const deleteFile = () => {
+  const __filename = new URL(import.meta.url).pathname;
+  const __dirname = path.dirname(__filename);
+
+  const dirPath = decodeURIComponent(
+    path.join(__dirname, "../../tmp").slice(1).replace(/\\/g, "/")
+  );
+
+  if (fs.existsSync(dirPath)) {
+    // Read the contents of the directory
+    const files = fs.readdirSync(dirPath);
+
+    // Iterate over the files and remove them
+    files.forEach((file) => {
+      const curPath = path.join(dirPath, file);
+      fs.unlinkSync(curPath);
+    });
+
+    // Remove the empty directory
+    fs.rmdirSync(dirPath);
+  } else {
+    console.log(`Directory '${dirPath}' does not exist.`);
+  }
+};
 
 

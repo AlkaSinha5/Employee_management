@@ -1,6 +1,6 @@
 import Joi from 'joi';
 const employeeJoiSchema = Joi.object({
-    AttendenceID: Joi.string().hex().length(24), 
+    AttendenceID: Joi.string(), 
     LastName: Joi.string(),
     Email: Joi.string().email(),
     PhoneNumber: Joi.string().length(10).pattern(/^[0-9]+$/),
