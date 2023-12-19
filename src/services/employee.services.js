@@ -13,7 +13,7 @@ cloudinary.config({
   export const addEmployee = asyncHandler(async (req, res) => {
     try {
       const {
-        UserID,
+        // UserID,
         AttendenceID,
         FirstName,
         LastName,
@@ -57,7 +57,7 @@ cloudinary.config({
     
   
       const employee = await Employee.create({
-        UserID,
+        // UserID,
         AttendenceID,
         FirstName,
         LastName,

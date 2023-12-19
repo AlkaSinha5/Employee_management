@@ -169,28 +169,29 @@ export const updateAttendence = asyncHandler(async (req, res) => {
     const id = req.params.id;
     const updatedData = req.body;
 
-    if (req.files && req.files.ProfilePicture) {
-      const file = req.files.ProfilePicture;
+    if (req.files && req.files.Photo) {
+      const file = req.files.Photo;
       const result = await cloudinary.uploader.upload(file.tempFilePath);
-      updatedData.ProfilePicture = result.secure_url;
+      updatedData.Photo= result.secure_url;
     }
 
-    const updatedAttendence = await Attendance.findByIdAndUpdate(
+    const updatedAttendance = await Attendance.findByIdAndUpdate(
       id,
       updatedData,
       { new: true }
     );
 
-    if (!updatedAttendence) {
+    if (!updatedAttendance) {
       return res.status(404).json({
         success: false,
-        error: "Employee not found",
+        error: "Attendence not found",
       });
     }
+    
 
     res.status(200).json({
       success: true,
-      data: updatedAttendence,
+      data: updatedAttendance,
     });
   } catch (error) {
     res.status(400).json({

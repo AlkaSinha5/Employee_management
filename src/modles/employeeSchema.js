@@ -2,7 +2,7 @@
 import mongoose from 'mongoose'
 
 const employeeSchema = new mongoose.Schema({
-    UserID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    // UserID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     AttendenceID: { type: mongoose.Schema.Types.ObjectId, ref: 'Attendance' },
     FirstName: { type: String},
     LastName: { type: String },
