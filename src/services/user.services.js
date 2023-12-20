@@ -60,6 +60,7 @@ export const addUser = asyncHandler(async (req, res) => {
         firstName: user.FirstName,
         lastName: user.LastName,
         Email:user.Email,
+        id:user.id,
         // roleid: user.roleId
       };
     } else {
