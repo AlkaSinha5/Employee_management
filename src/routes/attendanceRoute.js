@@ -1,5 +1,5 @@
 import  express  from "express";
-import { AddAttendence, DeleteAttendence, GetAttendence, GetAttendenceById, GetAttendenceCount, UpdateAttendence } from "../controllers/attendence.controllers.js";
+import { AddAttendence, DeleteAttendence, GetAttendence, GetAttendenceById, GetAttendenceCount, GetPerDayStatus, GetStatusMonthWise, UpdateAttendence } from "../controllers/attendence.controllers.js";
 import { attendanceSchema } from "../validators/attendance.validators.js";
 
 
@@ -21,7 +21,9 @@ router.get("/getAttendence" ,GetAttendence);
 router.delete("/deteteAttendence/:id", DeleteAttendence);
 router.put("/updateAttendence/:id", UpdateAttendence);
 router.get("/getAttendenceById/:id",  GetAttendenceById);
-router.get("/attendance-count",GetAttendenceCount)
+router.get("/attendance-count",GetAttendenceCount);
+router.get("/perdaystatus/:employeeId/:startDate/:endDate",GetPerDayStatus);
+router.get("/monthlystatus/:employeeId/:year/:month",GetStatusMonthWise)
 
 
 

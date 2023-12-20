@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler"
-import { addAttendance, deleteAttendence, getAttendence, getAttendenceById, getAttendenceCount, updateAttendence} from "../services/attendance.service.js";
+import { addAttendance, deleteAttendence, getAttendence, getAttendenceById, getAttendenceCount, getStatusMothWise, getperDayStatus, updateAttendence} from "../services/attendance.service.js";
 
 
 export const AddAttendence = asyncHandler(async (req, res) => {
@@ -59,4 +59,12 @@ export const GetAttendence = asyncHandler(async (req, res) => {
 
   export const GetAttendenceCount = asyncHandler(async (req, res) => {
     const result = await getAttendenceCount(req,res);
+  });
+
+  export const GetPerDayStatus = asyncHandler(async (req, res) => {
+    const result = await getperDayStatus(req,res);
+  });
+
+  export const GetStatusMonthWise = asyncHandler(async (req, res) => {
+    const result = await getStatusMothWise(req,res);
   });

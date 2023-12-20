@@ -62,21 +62,75 @@ import fs from "fs";
 //   }
 // });
 
+// export const addAttendance = asyncHandler(async (req, res) => {
+//   try {
+//     const {
+//       EmployeeID,
+//       ClockInDateTime,
+//       // ClockOutDateTime,
+//       GeolocationTracking,
+//       Status,
+//       attendenceDate,
+//     } = req.body;
+
+
+    
+
+//     let photoUrl = ""; // Initialize to an empty string
+
+//     // Check if Photo is provided in the request
+//     if (req.files && req.files.Photo) {
+//       const file = req.files.Photo;
+//       const result = await cloudinary.uploader.upload(file.tempFilePath);
+//       photoUrl = result.secure_url;
+//     }
+
+//     const attendance = await Attendance.create({
+//       EmployeeID,
+//       ClockInDateTime,
+//       // ClockOutDateTime,
+//       GeolocationTracking,
+//       Status,
+//       Photo: photoUrl,
+//       attendenceDate,
+//     });
+//       deleteFile()
+//     res.status(201).json({
+//       success: true,
+//       data: attendance,
+//     });
+//   } catch (error) {
+//     res.status(400).json({
+//       success: false,
+//       error: error.message,
+//     });
+//   }
+// });
+
 export const addAttendance = asyncHandler(async (req, res) => {
   try {
     const {
       EmployeeID,
       ClockInDateTime,
-      // ClockOutDateTime,
       GeolocationTracking,
       Status,
       attendenceDate,
     } = req.body;
 
+    // Check if an attendance record already exists for the given date and employee
+    const existingAttendance = await Attendance.findOne({
+      EmployeeID,
+      attendenceDate,
+    });
 
-    
+    if (existingAttendance) {
+      return res.status(400).json({
+        success: false,
+        error: 'Attendance record for this date and employee already exists.',
+      });
+    }
 
-    let photoUrl = ""; // Initialize to an empty string
+    let photoUrl = ''; // Initialize to an empty string
 
     // Check if Photo is provided in the request
     if (req.files && req.files.Photo) {
@@ -88,13 +142,14 @@ export const addAttendance = asyncHandler(async (req, res) => {
     const attendance = await Attendance.create({
       EmployeeID,
       ClockInDateTime,
-      // ClockOutDateTime,
       GeolocationTracking,
       Status,
       Photo: photoUrl,
       attendenceDate,
     });
-      deleteFile()
+
+    deleteFile();
+
     res.status(201).json({
       success: true,
       data: attendance,
@@ -106,6 +161,7 @@ export const addAttendance = asyncHandler(async (req, res) => {
     });
   }
 });
+
 
 
 export const getAttendence = asyncHandler(async (paginationOptions,filter,sort) => {
@@ -253,6 +309,85 @@ export const getAttendenceCount = asyncHandler(async (req,res) => {
   }
  
 });
+export const getperDayStatus = asyncHandler(async (req,res) => {
+  try {
+    const employeeId = req.params.employeeId;
+    const startDate = new Date(req.params.startDate);
+    const endDate = new Date(req.params.endDate);
+
+    // Add your existing filters and sorting logic here
+    const filter = {
+      EmployeeID: employeeId,
+      attendenceDate: { $gte: startDate, $lte: endDate }
+    };
+
+    const perDayStatus = await Attendance.find(filter)
+      .populate('EmployeeID')
+      .sort({ attendenceDate: 1 }); // You can customize the sorting logic
+
+    res.json({ success: true, data: perDayStatus });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+ 
+});
+
+
+export const getStatusMothWise = asyncHandler(async (req,res) => {
+  try {
+    const employeeId = req.params.employeeId;
+    const year = req.params.year;
+    const month = req.params.month;
+
+    // Calculate the start and end dates for the specified month
+    const startDate = new Date(`${year}-${month}-01T00:00:00.000Z`);
+    const endDate = new Date(new Date(startDate).setMonth(startDate.getMonth() + 1));
+
+    // Add your existing filters and sorting logic here
+    const filter = {
+      EmployeeID: employeeId,
+      attendenceDate: { $gte: startDate, $lt: endDate }
+    };
+
+    const monthlyStatus = await Attendance.find(filter)
+      .populate('EmployeeID')
+      .sort({ attendenceDate: 1 }); // You can customize the sorting logic
+
+    // Count occurrences of "Present," "Absent," and "Leave"
+    let presentCount = 0;
+    let absentCount = 0;
+    let leaveCount = 0;
+
+    monthlyStatus.forEach((attendance) => {
+      if (attendance.Status === 'Present') {
+        presentCount++;
+      } else if (attendance.Status === 'Absent') {
+        absentCount++;
+      } else if (attendance.Status === 'Leave') {
+        leaveCount++;
+      }
+    });
+
+    res.json({
+      success: true,
+      data: {
+        monthlyStatus,
+        counts: {
+          present: presentCount,
+          absent: absentCount,
+          leave: leaveCount
+        }
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+
+})
+
+
 
 const deleteFile = () => {
   const __filename = new URL(import.meta.url).pathname;
