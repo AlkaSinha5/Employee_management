@@ -44,7 +44,10 @@ export const addUser = asyncHandler(async (req, res) => {
             username: user.FirstName,
             email: user.Email,
             id: user.id,
-            roleId: user.roleId,
+            firstName: user.FirstName,
+            lastName: user.LastName,
+            
+            // roleId: user.roleId,
           },
           
         },
@@ -54,7 +57,10 @@ export const addUser = asyncHandler(async (req, res) => {
       //console.log(accessToken)
       return {
         token: accessToken,
-        roleid: user.roleId
+        firstName: user.FirstName,
+        lastName: user.LastName,
+        Email:user.Email,
+        // roleid: user.roleId
       };
     } else {
       res.status(401)
