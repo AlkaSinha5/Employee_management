@@ -6,6 +6,12 @@ const userSchema = new mongoose.Schema({
   LastName: String,
   Email: String,
   Password: String,
+  locations: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Location',
+    },
+  ],
   
 });
 

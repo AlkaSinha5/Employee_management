@@ -1,14 +1,26 @@
 import asyncHandler from 'express-async-handler';
 import LocationS from "../modles/correntLocation.js"
+import User from "../modles/userSchema.js"
 
 export const addLocationData = asyncHandler(async (req, res) => {
     try {
        
-         const { EmployeeID,Location,Date,Time,Address} =  req.body;
+         const { UserID,Location,Date,Time,Address} =  req.body;
+         const user = await User.findOne({ _id: UserID  });
+         
+         if (!user) {
+           return res.status(404).json({
+             success: false,
+             error: 'User not found',
+           });
+         }
 
   const location= await LocationS.create({
-            EmployeeID,Location,Date,Time,Address
+            UserID,Location,Date,Time,Address
         });
+
+        user.locations.push(location._id);
+        await user.save();
 
         res.status(201).json({
             success: true,
