@@ -31,7 +31,7 @@ import mongoose from 'mongoose';
 
 // attendanceSchema.index({ 'GeolocationTracking.location': '2dsphere' });
 const attendanceSchema = new mongoose.Schema({
-  EmployeeID: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
+  UserID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   ClockInDateTime: { type: String },
   // ClockOutDateTime: { type: Date },
   GeolocationTracking: {

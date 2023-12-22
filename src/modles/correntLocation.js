@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const currentLocationSchema = new mongoose.Schema({
-  EmployeeID: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
+  UserID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   Location: {
     type: String},
   Date: {

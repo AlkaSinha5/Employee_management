@@ -8,7 +8,7 @@ import fs from "fs";
 export const addAttendance = asyncHandler(async (req, res) => {
   try {
     const {
-      EmployeeID,
+      UserID,
       ClockInDateTime,
       GeolocationTracking,
       Status,
@@ -17,7 +17,7 @@ export const addAttendance = asyncHandler(async (req, res) => {
 
     // Check if an attendance record already exists for the given date and employee
     const existingAttendance = await Attendance.findOne({
-      EmployeeID,
+      // UserID,
       attendenceDate,
     });
 
@@ -38,7 +38,7 @@ export const addAttendance = asyncHandler(async (req, res) => {
     }
 
     const attendance = await Attendance.create({
-      EmployeeID,
+      UserID,
       ClockInDateTime,
       GeolocationTracking,
       Status,
@@ -76,7 +76,7 @@ export const getAttendence = asyncHandler(async (paginationOptions,filter,sort) 
     };
 
     const success = await Attendance.find(filter)
-    .populate('EmployeeID')
+    .populate('UserID')
     .collation(collation)
     .sort(sort)
     .skip(skip)
@@ -113,7 +113,7 @@ export const deleteAttendence = asyncHandler(async (req, res) => {
 
 export const getAttendenceById = asyncHandler(async (id) => {
   const success = await Attendance.findById(id)
-  .populate("EmployeeID");
+  .populate("UserID");
   console.log(success);
   return success;
 });
@@ -209,18 +209,18 @@ export const getAttendenceCount = asyncHandler(async (req,res) => {
 });
 export const getperDayStatus = asyncHandler(async (req,res) => {
   try {
-    const employeeId = req.params.employeeId;
+    const userId = req.params.userId;
     const startDate = new Date(req.params.startDate);
     const endDate = new Date(req.params.endDate);
 
     // Add your existing filters and sorting logic here
     const filter = {
-      EmployeeID: employeeId,
+      UserID: userId,
       attendenceDate: { $gte: startDate, $lte: endDate }
     };
 
     const perDayStatus = await Attendance.find(filter)
-      .populate('EmployeeID')
+      .populate('UserID')
       .sort({ attendenceDate: 1 }); // You can customize the sorting logic
 
     res.json({ success: true, data: perDayStatus });
@@ -234,7 +234,7 @@ export const getperDayStatus = asyncHandler(async (req,res) => {
 
 export const getStatusMothWise = asyncHandler(async (req,res) => {
   try {
-    const employeeId = req.params.employeeId;
+    const userId = req.params.userId;
     const year = req.params.year;
     const month = req.params.month;
 
@@ -244,12 +244,12 @@ export const getStatusMothWise = asyncHandler(async (req,res) => {
 
     // Add your existing filters and sorting logic here
     const filter = {
-      EmployeeID: employeeId,
+      userID: userId,
       attendenceDate: { $gte: startDate, $lt: endDate }
     };
 
     const monthlyStatus = await Attendance.find(filter)
-      .populate('EmployeeID')
+      .populate('UserID')
       .sort({ attendenceDate: 1 }); // You can customize the sorting logic
 
     // Count occurrences of "Present," "Absent," and "Leave"
