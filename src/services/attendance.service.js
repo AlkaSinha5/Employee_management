@@ -4,108 +4,6 @@ import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 import fs from "fs";
 
-// export const addAttendance = asyncHandler(async (req, res) => {
-//   try {
-//     const {
-//       EmployeeID,
-//       ClockInDateTime,
-//       ClockOutDateTime,
-//       GeolocationTracking,
-//       Status,
-//       attendenceDate,
-//     } = req.body;
-
-//     // Check if GeolocationTracking is an array and not empty
-//     // if (!Array.isArray(GeolocationTracking) || GeolocationTracking.length === 0) {
-//     //   return res.status(400).json({
-//     //     success: false,
-//     //     error: "GeolocationTracking must be a non-empty array.",
-//     //   });
-//     // }
-
-//     const mappedGeolocation = GeolocationTracking.map(track => ({
-//       timestamp: track.timestamp,
-//       location: {
-//         type: "Point",
-//         coordinates: [track.longitude, track.latitude],
-//       },
-//     }));
-
-//     let photoUrl = ""; // Initialize to an empty string
-
-//     // Check if Photo is provided in the request
-//     if (req.files && req.files.Photo) {
-//       const file = req.files.Photo;
-//       const result = await cloudinary.uploader.upload(file.tempFilePath);
-//       photoUrl = result.secure_url;
-//     }
-
-//     const attendance = await Attendance.create({
-//       EmployeeID,
-//       ClockInDateTime,
-//       ClockOutDateTime,
-//       GeolocationTracking: mappedGeolocation,
-//       Status,
-//       Photo: photoUrl,
-//       attendenceDate,
-//     });
-//     deleteFile()
-//     res.status(201).json({
-//       success: true,
-//       data: attendance,
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       success: false,
-//       error: error.message,
-//     });
-//   }
-// });
-
-// export const addAttendance = asyncHandler(async (req, res) => {
-//   try {
-//     const {
-//       EmployeeID,
-//       ClockInDateTime,
-//       // ClockOutDateTime,
-//       GeolocationTracking,
-//       Status,
-//       attendenceDate,
-//     } = req.body;
-
-
-    
-
-//     let photoUrl = ""; // Initialize to an empty string
-
-//     // Check if Photo is provided in the request
-//     if (req.files && req.files.Photo) {
-//       const file = req.files.Photo;
-//       const result = await cloudinary.uploader.upload(file.tempFilePath);
-//       photoUrl = result.secure_url;
-//     }
-
-//     const attendance = await Attendance.create({
-//       EmployeeID,
-//       ClockInDateTime,
-//       // ClockOutDateTime,
-//       GeolocationTracking,
-//       Status,
-//       Photo: photoUrl,
-//       attendenceDate,
-//     });
-//       deleteFile()
-//     res.status(201).json({
-//       success: true,
-//       data: attendance,
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       success: false,
-//       error: error.message,
-//     });
-//   }
-// });
 
 export const addAttendance = asyncHandler(async (req, res) => {
   try {
@@ -184,7 +82,7 @@ export const getAttendence = asyncHandler(async (paginationOptions,filter,sort) 
     .skip(skip)
     .limit(size);
 
-    console.log(success)
+    // console.log(success)
     
 
     return {
