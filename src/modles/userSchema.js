@@ -17,9 +17,7 @@ const userSchema = new mongoose.Schema({
   WorkSedule: String, // You might want to use a more appropriate type or schema for the work schedule
   FirstName: String,
   LastName: String,
-  Email: {
-    type: String,
-  },
+  Email: String,
   Password: String,
   locations: [
     {
