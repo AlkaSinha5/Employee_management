@@ -7,7 +7,7 @@ import { addUser, deleteUser, getUserById, getUsers, loginUser, updateUser } fro
 
 export const AddUser = asyncHandler(async (req, res) => {
  try {
-  const {  FirstName, LastName, Email, Password } = req.body;
+  const { Email} = req.body;
 
   
   const useAvailable = await userSchema.findOne({ Email });
@@ -26,15 +26,10 @@ export const AddUser = asyncHandler(async (req, res) => {
 });
 
 export const LoginUser = asyncHandler(async (req, res) => {
-  try {
+ 
     const user = await loginUser(req, res); 
-    return res.status(200).send({ user , massage:"login Successfully"});
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error.message,
-    });
-  }
+
+ 
 });
 
 export const GetUsers = asyncHandler(async (req, res) => {

@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import { addLocationData } from "../services/correntLocation.services.js";
+import { addLocationData, deleteLocation, getAllLocation, getLocationeById } from "../services/correntLocation.services.js";
 
 
 export const AddLocation = asyncHandler(async (req, res) => {
@@ -7,14 +7,18 @@ export const AddLocation = asyncHandler(async (req, res) => {
   });
 
 
-  export const GetbyRoleName = asyncHandler(async (req, res) => {
-    const result = await getRoleByName(req, res);
+  export const GetLocationById = asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const result = await getLocationeById(id);
+    res.status(200).send({ result });
   });
 
-  export const GetAllRoleData = asyncHandler(async (req, res) => {
-    const result = await getAllRoles(req, res);
+  export const GetAllLocationData = asyncHandler(async (req, res) => {
+    const result = await getAllLocation(req, res);
   });
 
-  export const GetByIdData = asyncHandler(async (req, res) => {
-    const result = await getRoleById(req, res);
+  export const DeleteLocation = asyncHandler(async (req, res) => {
+    const result = await deleteLocation(req, res);
   });
+
+  
