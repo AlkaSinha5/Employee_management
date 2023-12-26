@@ -5,7 +5,8 @@ import attendenceRoutes from './attendanceRoute.js';
 import roleRoutes from './roleRoutes.js';
 import locationRoutes from "./correntLocationRoute.js";
 import dailyRoutes from "./dailySummaryRoute.js";
-import taskRoutes from "./taskRoute.js"
+import taskRoutes from "./taskRoute.js";
+import adminRoutes from "./adminRoute.js"
 
 const router =express.Router();
 
@@ -16,6 +17,7 @@ router.use("/role",roleRoutes);
 router.use("/location",locationRoutes);
 router.use("/daily",dailyRoutes);
 router.use("/task", taskRoutes);
+router.use("/admin",adminRoutes);
 
 
 
