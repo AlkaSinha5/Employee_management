@@ -2,23 +2,22 @@ import asyncHandler from "express-async-handler";
 import User from "../modles/userSchema.js"; // Corrected the path
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { v2 as cloudinary } from "cloudinary";
-import path from "path";
-import fs from "fs";
+import cloudinary from "cloudinary";
 
-
+// Configure Cloudinary with your credentials
 cloudinary.config({
-    cloud_name: "dhzk0ztrn",
-    api_key: "571339484391153",
-    api_secret: "WWmOJpVF5y02r7Blu2oAr0RxbU0",
-  });
+  cloud_name: "dhzk0ztrn",
+  api_key: "571339484391153",
+  api_secret: "WWmOJpVF5y02r7Blu2oAr0RxbU0",
+});
 
 export const addUser = asyncHandler(async (req, res) => {
   try {
-    const {   
-      ComapnyEmplyeeID, 
-      ManagerId, 
+    const {
+      ComapnyEmplyeeID,
+      ManagerId,
       JoiningDate,
+      Certificates,
       JobTitle,
       MoblieNumber,
       CompanyName,
@@ -26,17 +25,17 @@ export const addUser = asyncHandler(async (req, res) => {
       Department,
       Education,
       EmploymentStatus,
-      WorkSedule, 
+      WorkSedule,
       FirstName,
       LastName,
       Email,
       Password,
       locations,
-      tasks
+      tasks,
     } = req.body;
 
-    const hashpassword = await bcrypt.hash(Password, 10); 
-    let profilePictureUrl = ""; 
+    const hashpassword = await bcrypt.hash(Password, 10);
+    let profilePictureUrl = "";
     let certificateUrls = [];
 
     if (req.files && req.files.ProfilePicture) {
@@ -51,12 +50,13 @@ export const addUser = asyncHandler(async (req, res) => {
         certificateUrls.push(certificateResult.secure_url);
       }
     }
+
     const user = await User.create({
       ComapnyEmplyeeID,
       ManagerId,
       JoiningDate,
-      Certificates:certificateUrls,
-      ProfilePhoto:profilePictureUrl,
+      Certificates: certificateUrls,
+      ProfilePhoto: profilePictureUrl,
       JobTitle,
       MoblieNumber,
       CompanyName,
@@ -78,6 +78,7 @@ export const addUser = asyncHandler(async (req, res) => {
       data: user,
     });
   } catch (error) {
+    console.error("Error:", error);
     res.status(400).json({
       success: false,
       error: error.message,
@@ -181,11 +182,133 @@ export const getUserById = asyncHandler(async (req, res) => {
 });
 
 export const updateUser = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-  const updatedData = req.body;
-  const success = await updateUser(id, updatedData);
-  res.status(200).json({
-    success: true,
-    data: success,
-  });
+  const userId = req.params.id;
+  const {
+    MoblieNumber,
+    ComapnyEmplyeeID,
+    ManagerId,
+    JoiningDate,
+    JobTitle,
+    CompanyName,
+    Address,
+    Department,
+    Education,
+    EmploymentStatus,
+    WorkSedule,
+    FirstName,
+    LastName,
+    Email,
+    Password,
+    locations,
+    tasks,
+  } = req.body;
+
+  try {
+    const hashpassword = await bcrypt.hash(Password, 10);
+
+    let profilePictureUrl = "";
+    let certificateUrls = [];
+
+    // Update ProfilePhoto if provided
+    if (req.files && req.files.ProfilePhoto) {
+      const file = req.files.ProfilePhoto;
+      const result = await cloudinary.uploader.upload(file.tempFilePath);
+      profilePictureUrl = result.secure_url;
+    }
+
+    // Update Certificates if provided
+    if (req.files && req.files.Certificates && req.files.Certificates.length > 0) {
+      for (const certificate of req.files.Certificates) {
+        const certificateResult = await cloudinary.uploader.upload(certificate.tempFilePath);
+        certificateUrls.push(certificateResult.secure_url);
+      }
+    }
+
+    // Update all fields
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        MoblieNumber,
+        ComapnyEmplyeeID,
+        ManagerId,
+        JoiningDate,
+        JobTitle,
+        CompanyName,
+        Address,
+        Department,
+        Education,
+        EmploymentStatus,
+        WorkSedule,
+        FirstName,
+        LastName,
+        Email,
+        Password: hashpassword,
+        locations,
+        tasks,
+        ProfilePhoto: profilePictureUrl,
+        Certificates: certificateUrls,
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
+});
+
+export const updateDataByUser = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  const { MoblieNumber, Certificates } = req.body;
+  let profilePhotoUrl;
+
+  try {
+    // Update MoblieNumber if provided
+    if (MoblieNumber) {
+      await User.findByIdAndUpdate(userId, { MoblieNumber }, { new: true });
+    }
+
+    // Update ProfilePhoto if provided
+    if (req.files && req.files.ProfilePhoto) {
+      const file = req.files.ProfilePhoto;
+      const result = await cloudinary.uploader.upload(file.tempFilePath);
+      profilePhotoUrl = result.secure_url;
+
+      // Example: Save updated ProfilePhoto to the user's document
+      await User.findByIdAndUpdate(userId, { ProfilePhoto: profilePhotoUrl }, { new: true });
+    }
+
+    // Update Certificates if provided
+    if (Certificates && Certificates.length > 0) {
+      const certificateUrls = [];
+      for (const certificate of Certificates) {
+        const certificateResult = await cloudinary.uploader.upload(certificate.tempFilePath);
+        certificateUrls.push(certificateResult.secure_url);
+      }
+
+      // Example: Save updated Certificates to the user's document
+      await User.findByIdAndUpdate(userId, { Certificates: certificateUrls }, { new: true });
+    }
+
+    // Fetch the updated user document
+    const updatedUser = await User.findById(userId);
+
+    res.status(200).json({
+      success: true,
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
 });
