@@ -25,6 +25,4 @@ router.post('/login', LoginAdmin);
 
 
 
-
-
 export default router ;
