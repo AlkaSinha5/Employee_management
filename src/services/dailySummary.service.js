@@ -5,8 +5,6 @@ export const addDailyData = asyncHandler(async (req, res) => {
     try {
         const { UserID, Description } = req.body;
 
-        // console.log("Request Body:", req.body); // Log the request body for debugging
-
         const daily = await Daily.create({
             UserID,
             Description
@@ -24,3 +22,38 @@ export const addDailyData = asyncHandler(async (req, res) => {
         });
     }
 });
+
+export const getAllSummary = asyncHandler(async (req, res) => {
+    try {
+        const dailySummary = await Daily.find();
+
+        res.status(200).json({
+            success: true,
+            data: dailySummary,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Server Error',
+        });
+    }
+});
+
+export const getSummaryById = asyncHandler(async (id) => {
+    const success = await Daily.findById(id);
+    // console.log(success);
+    return success;
+  });
+
+
+  export const deleteSummary = asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const success = await Daily.findByIdAndDelete(id);
+    if (success) {
+      res.status(200).send({ success, message: "Ok deleted ......" });
+    } else {
+    
+      res.status(404).send({massage: "ID not found "})
+        return { error: "not deleted..." };
+    }
+  });

@@ -35,22 +35,17 @@ export const addLocationData = asyncHandler(async (req, res) => {
 });
 
 
-export const getRoleByName = asyncHandler(async (req, res) => {
-    const { roleName } = req.params;
 
+
+
+
+export const getAllLocation = asyncHandler(async (req, res) => {
     try {
-        const role = await roleSchema.findOne({ roleName });
-
-        if (!role) {
-            return res.status(404).json({
-                success: false,
-                error: 'Role not found',
-            });
-        }
+        const location = await LocationS.find();
 
         res.status(200).json({
             success: true,
-            data: role,
+            data: location,
         });
     } catch (error) {
         res.status(500).json({
@@ -60,46 +55,21 @@ export const getRoleByName = asyncHandler(async (req, res) => {
     }
 });
 
+export const getLocationeById = asyncHandler(async (id) => {
+    const success = await LocationS.findById(id);
+    // console.log(success);
+    return success;
+  });
 
 
-
-export const getAllRoles = asyncHandler(async (req, res) => {
-    try {
-        const roles = await roleSchema.find();
-
-        res.status(200).json({
-            success: true,
-            data: roles,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: 'Server Error',
-        });
+  export const deleteLocation = asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const success = await LocationS.findByIdAndDelete(id);
+    if (success) {
+      res.status(200).send({ success, message: "Ok deleted ......" });
+    } else {
+    
+      res.status(404).send({massage: "ID not found "})
+        return { error: "not deleted..." };
     }
-});
-
-export const getRoleById = asyncHandler(async (req, res) => {
-    const roleId = req.params.id; 
-
-    try {
-        const role = await roleSchema.findById(roleId);
-
-        if (!role) {
-            return res.status(404).json({
-                success: false,
-                error: 'Role not found',
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            data: role,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: 'Server Error',
-        });
-    }
-});
+  });
