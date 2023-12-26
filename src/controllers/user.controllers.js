@@ -1,7 +1,7 @@
 
 import asyncHandler from "express-async-handler"
 import userSchema from "../modles/userSchema.js";
-import { addUser, deleteUser, getUserById, getUsers, loginUser, updateUser } from "../services/user.services.js";
+import { addUser, deleteUser, getUserById, getUsers, loginUser, updateDataByUser, updateUser } from "../services/user.services.js";
 
 
 
@@ -79,4 +79,9 @@ export const GetUserById = asyncHandler(async (req, res) => {
   const id = req.params.id;
   const result = await getUserById(id);
   res.status(200).send({ result });
+});
+
+export const UpdateDataByUser= asyncHandler(async (req, res) => {
+  const success = await updateDataByUser(req,res)
+  
 });
