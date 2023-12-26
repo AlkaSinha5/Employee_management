@@ -2,6 +2,16 @@ import asyncHandler from "express-async-handler";
 import User from "../modles/userSchema.js"; // Corrected the path
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { v2 as cloudinary } from "cloudinary";
+import path from "path";
+import fs from "fs";
+
+
+cloudinary.config({
+    cloud_name: "dhzk0ztrn",
+    api_key: "571339484391153",
+    api_secret: "WWmOJpVF5y02r7Blu2oAr0RxbU0",
+  });
 
 export const addUser = asyncHandler(async (req, res) => {
   try {
@@ -9,8 +19,6 @@ export const addUser = asyncHandler(async (req, res) => {
       ComapnyEmplyeeID, 
       ManagerId, 
       JoiningDate,
-      Certificates,
-      ProfilePhoto,
       JobTitle,
       MoblieNumber,
       CompanyName,
@@ -28,13 +36,27 @@ export const addUser = asyncHandler(async (req, res) => {
     } = req.body;
 
     const hashpassword = await bcrypt.hash(Password, 10); 
+    let profilePictureUrl = ""; 
+    let certificateUrls = [];
 
+    if (req.files && req.files.ProfilePicture) {
+      const file = req.files.ProfilePicture;
+      const result = await cloudinary.uploader.upload(file.tempFilePath);
+      profilePictureUrl = result.secure_url;
+    }
+
+    if (Certificates && Certificates.length > 0) {
+      for (const certificate of Certificates) {
+        const certificateResult = await cloudinary.uploader.upload(certificate.tempFilePath);
+        certificateUrls.push(certificateResult.secure_url);
+      }
+    }
     const user = await User.create({
       ComapnyEmplyeeID,
       ManagerId,
       JoiningDate,
-      Certificates,
-      ProfilePhoto,
+      Certificates:certificateUrls,
+      ProfilePhoto:profilePictureUrl,
       JobTitle,
       MoblieNumber,
       CompanyName,
@@ -85,15 +107,31 @@ export const loginUser = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       token: accessToken,
-      firstName: user.FirstName,
-      lastName: user.LastName,
-      Email: user.Email,
-      id: user.id,
+      user: {
+        id: user.id,
+        ComapnyEmplyeeID: user.ComapnyEmplyeeID,
+        ManagerId: user.ManagerId,
+        JoiningDate: user.JoiningDate,
+        Certificates: user.Certificates,
+        ProfilePhoto: user.ProfilePhoto,
+        JobTitle: user.JobTitle,
+        MoblieNumber: user.MoblieNumber,
+        CompanyName: user.CompanyName,
+        Address: user.Address,
+        Department: user.Department,
+        Education: user.Education,
+        EmploymentStatus: user.EmploymentStatus,
+        WorkSedule: user.WorkSedule,
+        FirstName: user.FirstName,
+        LastName: user.LastName,
+        Email: user.Email,
+      },
     });
   } else {
     res.status(401).send("User or Password is Wrong"); // Simplified the response
   }
 });
+
 
 export const getUsers = asyncHandler(async (req, res) => {
   try {

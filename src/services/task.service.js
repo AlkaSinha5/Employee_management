@@ -1,29 +1,42 @@
 import asyncHandler from 'express-async-handler';
 import Task from '../modles/taskSchema.js'; 
+import User from "../modles/userSchema.js"
 
 // Create a task
 export const addTaskData = asyncHandler(async (req, res) => {
-  try {
-    const { UserID, task, completed } = req.body;
-
-    const tasks = await Task.create({
-      UserID,
-      task,
-      completed,
-    });
-
-    res.status(201).json({
-      success: true,
-      data: tasks,
-    });
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(400).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
+    try {
+      const { UserID, task, completed } = req.body;
+      
+      const user = await User.findOne({ _id: UserID });
+      
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          error: 'User not found',
+        });
+      }
+  
+      const newTask = await Task.create({
+        UserID,
+        task,
+        completed,
+      });
+  
+      user.tasks.push(newTask._id); 
+      await user.save();
+  
+      res.status(201).json({
+        success: true,
+        data: newTask,
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
 
 // Get all tasks
 export const getAllTasks = asyncHandler(async (req, res) => {
