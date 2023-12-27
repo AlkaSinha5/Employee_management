@@ -67,12 +67,9 @@ export const DeleteUser = asyncHandler(async (req, res) => {
 });
 
 export const UpdateUser = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-  const updatedData = req.body;
-  const success = await updateUser(id, updatedData, {
-    new: true,
-  });
-  res.status(200).send({ success });
+  
+  const success = await updateUser(req,res)
+   
 });
 
 export const GetUserById = asyncHandler(async (req, res) => {
