@@ -3,6 +3,8 @@ import User from "../modles/userSchema.js"; // Corrected the path
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cloudinary from "cloudinary";
+import path from "path";
+import fs from "fs";
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
@@ -80,7 +82,7 @@ export const addUser = asyncHandler(async (req, res) => {
       locations,
       tasks,
     });
-
+deleteFile()
     res.status(201).json({
       success: true,
       data: user,
@@ -116,7 +118,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     );
 
     return res.status(200).json({
-      token: accessToken,
+      // token: accessToken,
       user: {
         id: user.id,
         ComapnyEmplyeeID: user.ComapnyEmplyeeID,
@@ -135,6 +137,7 @@ export const loginUser = asyncHandler(async (req, res) => {
         FirstName: user.FirstName,
         LastName: user.LastName,
         Email: user.Email,
+        token: accessToken,
       },
     });
   } else {
@@ -233,7 +236,7 @@ export const updateUser = asyncHandler(async (req, res) => {
         error: "User not found",
       });
     }
-
+deleteFile()
     res.status(200).json({
       success: true,
       data: updatedUser,
@@ -297,7 +300,7 @@ export const updateDataByUser = asyncHandler(async (req, res) => {
         error: "User not found",
       });
     }
-
+deleteFile()
     res.status(200).json({
       success: true,
       data: updatedUser,
@@ -309,4 +312,30 @@ export const updateDataByUser = asyncHandler(async (req, res) => {
     });
   }
 });
+
+const deleteFile = () => {
+  const __filename = new URL(import.meta.url).pathname;
+  const __dirname = path.dirname(__filename);
+
+  const dirPath = decodeURIComponent(
+    path.join(__dirname, "../../tmp").slice(1).replace(/\\/g, "/")
+  );
+
+  if (fs.existsSync(dirPath)) {
+    // Read the contents of the directory
+    const files = fs.readdirSync(dirPath);
+
+    // Iterate over the files and remove them
+    files.forEach((file) => {
+      const curPath = path.join(dirPath, file);
+      fs.unlinkSync(curPath);
+    });
+
+    // Remove the empty directory
+    fs.rmdirSync(dirPath);
+  } else {
+    console.log(`Directory '${dirPath}' does not exist.`);
+  }
+};
+
 
