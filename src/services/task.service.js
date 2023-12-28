@@ -17,15 +17,23 @@ export const addTaskData = asyncHandler(async (req, res) => {
     }
 
     // Assuming tasks is an array of task objects
-    const newTasks = await Task.insertMany(tasks.map(task => ({ ...task, UserID })));
+    const newTasks = tasks.map(task => ({
+      task: task.task,
+      completed: task.completed,
+      Date: task.Date,
+    }));
+
+    const createdTasks = await Task.insertMany(
+      tasks.map(task => ({ ...task, UserID: user._id }))
+    );
 
     // Assuming each task has an _id property
-    user.tasks.push(...newTasks.map(task => task._id));
+    user.tasks.push(...createdTasks.map(task => task._id));
     await user.save();
 
     res.status(201).json({
       success: true,
-      data: newTasks,
+      data: createdTasks,
     });
   } catch (error) {
     console.error('Error:', error);
