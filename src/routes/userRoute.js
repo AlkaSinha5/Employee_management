@@ -22,7 +22,7 @@ const router =express.Router();
 router.post("/addUser", AddUser);
 router.post('/login', LoginUser);
 router.get("/getUsers",verifyToken, GetUsers);
-router.delete("/deleteUser/:id", DeleteUser);
+router.delete("/deleteUser/:id",verifyToken, DeleteUser);
 router.put("/updateUser/:id",verifyToken,UpdateUser );
 router.put("/updateByUser/:id",verifyToken,UpdateDataByUser);
 router.get("/getUserById/:id",verifyToken, GetUserById);
