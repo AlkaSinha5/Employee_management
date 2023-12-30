@@ -116,24 +116,42 @@ export const deleteTask = asyncHandler(async (req, res) => {
 export const updateTask = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const { title, description, completed } = req.body;
+    const { description, completed, tasks } = req.body;
 
-    const task = await Task.findByIdAndUpdate(
+    // Update the tasks array and description
+    const updatedData = {
+      tasks: tasks,
+      description: description,
+    };
+
+    // If 'completed' is provided, update the 'completed' field as well
+    if (completed !== undefined) {
+      updatedData.tasks.forEach((task, index) => {
+        if (tasks[index].completed !== undefined) {
+          updatedData.tasks[index].completed = tasks[index].completed;
+        } else {
+          updatedData.tasks[index].completed = completed;
+        }
+      });
+    }
+
+    const updatedTask = await Task.findByIdAndUpdate(
       id,
-      { title, description, completed },
-      { new: true, runValidators: true }
-    ).lean();
+      updatedData,
+      { new: true }
+    );
 
-    if (!task) {
+    // Check if the task was not found
+    if (!updatedTask) {
       return res.status(404).json({
         success: false,
-        error: 'Task not found',
+        error: "Task not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      data: task,
+      data: updatedTask,
     });
   } catch (error) {
     res.status(500).json({
