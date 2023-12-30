@@ -18,6 +18,7 @@ const router =express.Router();
 //     next();
 //   };
   
+
 router.post("/addUser", AddUser);
 router.post('/login', LoginUser);
 router.get("/getUsers",verifyToken, GetUsers);
