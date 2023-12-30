@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import { addTaskData, deleteTask, getAllTasks, getTaskById, updateTask } from "../services/task.service.js";
+import { addTaskData, deleteTask, getAllTasks, getTaskById, getTasksByUserId, updateTask } from "../services/task.service.js";
 
 
 export const Addtask = asyncHandler(async (req, res) => {
@@ -22,4 +22,8 @@ export const Addtask = asyncHandler(async (req, res) => {
 
   export const Updatetask = asyncHandler(async (req, res) => {
     const result = await updateTask(req, res);
+  });
+
+  export const GetTasksByUserId= asyncHandler(async (req, res) => {
+    const result = await getTasksByUserId(req, res);
   });

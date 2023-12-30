@@ -160,3 +160,21 @@ export const updateTask = asyncHandler(async (req, res) => {
     });
   }
 });
+
+export const getTasksByUserId = asyncHandler(async (req, res) => {
+  // console.log(req.params)
+  const userId = req.params.id;
+  // console.log(userId)
+
+  // Fetch incomplete tasks by user ID
+  const incompleteTasks = await Task.find({
+   UserID: userId,
+   'tasks.completed': false,
+  
+});
+
+  res.status(200).json({
+    success: true,
+    data: incompleteTasks,
+  });
+});
