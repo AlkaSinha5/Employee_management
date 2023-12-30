@@ -18,12 +18,13 @@ const router =express.Router();
 //     next();
 //   };
   
+
 router.post("/addUser", AddUser);
 router.post('/login', LoginUser);
 router.get("/getUsers",verifyToken, GetUsers);
 router.delete("/deleteUser/:id", DeleteUser);
-router.put("/updateUser/:id",UpdateUser );
-router.put("/updateByUser/:id",UpdateDataByUser);
+router.put("/updateUser/:id",verifyToken,UpdateUser );
+router.put("/updateByUser/:id",verifyToken,UpdateDataByUser);
 router.get("/getUserById/:id",verifyToken, GetUserById);
 
 
