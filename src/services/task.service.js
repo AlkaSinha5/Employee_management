@@ -5,7 +5,7 @@ import User from "../modles/userSchema.js"
 // Create a task
 export const addTaskData = asyncHandler(async (req, res) => {
   try {
-    const { UserID, tasks } = req.body;
+    const { UserID, tasks,Date ,description} = req.body;
 
     const user = await User.findOne({ _id: UserID });
 
@@ -21,10 +21,14 @@ export const addTaskData = asyncHandler(async (req, res) => {
       task: task.task,
       completed: task.completed,
       Date: task.Date,
+      description: task.description,
     }));
 
     const createdTasks = await Task.insertMany(
-      tasks.map(task => ({ ...task, UserID: user._id }))
+      // tasks.map(task => ({ ...task, UserID: user._id }))
+      // newTasks.map(task => ({ tasks:task, UserID: user._id }))
+      {tasks:tasks, UserID: user._id,Date:Date,description:description}
+
     );
 
     // Assuming each task has an _id property
@@ -65,7 +69,7 @@ export const getAllTasks = asyncHandler(async (req, res) => {
 export const getTaskById = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const task = await Task.findById(id).lean();
+    const task = await Task.findById(id);
 
     if (!task) {
       return res.status(404).json({
@@ -90,7 +94,7 @@ export const getTaskById = asyncHandler(async (req, res) => {
 export const deleteTask = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const task = await Task.findByIdAndDelete(id).lean();
+    const task = await Task.findByIdAndDelete(id);
 
     if (!task) {
       return res.status(404).json({

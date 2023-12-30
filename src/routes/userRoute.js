@@ -1,7 +1,7 @@
 import  express  from "express";
 import { DeleteUser, GetUserById, UpdateUser, GetUsers, AddUser, LoginUser, UpdateDataByUser } from "../controllers/user.controllers.js";
 // import { userSchema } from '../validators/user.validators.js'
-// import { verifyToken } from "../helper/token_verify.js";
+import { verifyToken } from "../helper/token_verify.js"
 // import { isSuperAdmin } from "../middleware/isSuperAdmin.js";
 
 
@@ -20,11 +20,11 @@ const router =express.Router();
   
 router.post("/addUser", AddUser);
 router.post('/login', LoginUser);
-router.get("/getUsers", GetUsers);
+router.get("/getUsers",verifyToken, GetUsers);
 router.delete("/deleteUser/:id", DeleteUser);
 router.put("/updateUser/:id",UpdateUser );
 router.put("/updateByUser/:id",UpdateDataByUser);
-router.get("/getUserById/:id", GetUserById);
+router.get("/getUserById/:id",verifyToken, GetUserById);
 
 
 

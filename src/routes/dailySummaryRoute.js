@@ -1,6 +1,6 @@
 import  express  from "express";
 import { AddDaily, DeleteSummary, GetAllSummaryData, GetSummaryById } from "../controllers/dailySummarry.controller.js";
-
+import { verifyToken } from "../helper/token_verify.js";
 
 // import { roleSchema } from "../validators/role.validation.js";
 // import { verifyToken } from "../helper/token_verify.js";
@@ -15,7 +15,7 @@ const router =express.Router();
   
 //     next();
 //   };
-router.post("/addDailySummary", AddDaily);
+router.post("/addDailySummary",verifyToken, AddDaily);
 router.get("/getAllDailySummary",GetAllSummaryData);
 router.get("/getDailySummaryById/:id",GetSummaryById);
 router.delete("/deteteDailySummary/:id", DeleteSummary);

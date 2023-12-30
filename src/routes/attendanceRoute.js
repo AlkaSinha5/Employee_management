@@ -1,6 +1,7 @@
 import  express  from "express";
 import { AddAttendence, DeleteAttendence, GetAttendence, GetAttendenceById, GetAttendenceCount, GetPerDayStatus, GetStatusMonthWise, UpdateAttendence } from "../controllers/attendence.controllers.js";
 import { attendanceSchema } from "../validators/attendance.validators.js";
+import { verifyToken } from "../helper/token_verify.js";
 
 
 
@@ -16,8 +17,8 @@ const validatattendence = (req, res, next) => {
 };
 
 
-router.post("/addAttendence" , AddAttendence);
-router.get("/getAttendence" ,GetAttendence);
+router.post("/addAttendence" ,verifyToken, AddAttendence);
+router.get("/getAttendence",GetAttendence);
 router.delete("/deteteAttendence/:id", DeleteAttendence);
 router.put("/updateAttendence/:id", UpdateAttendence);
 router.get("/getAttendenceById/:id",  GetAttendenceById);
