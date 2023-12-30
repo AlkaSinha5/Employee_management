@@ -148,28 +148,16 @@ export const loginUser = asyncHandler(async (req, res) => {
 
 export const getUsers = asyncHandler(async (req, res) => {
   try {
-    const { page, size, filter, sort } = req.query;
-    const paginationOptions = { page: parseInt(page), size: parseInt(size) };
-
-    const { totalDocuments, data, previousPage, nextPage } = await getUsers(
-      paginationOptions,
-      filter,
-      sort
-    );
+    const user = await User.find();
 
     res.status(200).json({
       success: true,
-      data,
-      pagination: {
-        previousPage,
-        nextPage,
-        totalDocuments,
-      },
+      data: user,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: 'Server Error',
     });
   }
 });
@@ -184,15 +172,34 @@ export const deleteUser = asyncHandler(async (req, res) => {
   }
 });
 
+// user.controllers.js
+
 export const getUserById = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-  const user = await getUserById(id);
-  res.status(200).json({
-    success: true,
-    data: user,
-  });
+  try {
+    const id = req.params.id;
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Server Error',
+    });
+  }
 });
 
+
+//  const certificateUrlsAdmin = [];
 export const updateUser = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
@@ -207,7 +214,7 @@ export const updateUser = asyncHandler(async (req, res) => {
 
     // Check if Certificates are provided in the request
     if (req.files && req.files.Certificates) {
-      const certificateUrls = [];
+       const certificateUrls = [];
 
       // Ensure Certificates is iterable (array)
       const certificates = Array.isArray(req.files.Certificates)
@@ -249,7 +256,7 @@ deleteFile()
   }
 });
 
-
+// const certificateUrls = [];
 export const updateDataByUser = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
@@ -271,16 +278,17 @@ export const updateDataByUser = asyncHandler(async (req, res) => {
 
     // Check if Certificates are provided in the request
     if (req.files && req.files.Certificates) {
-      const certificateUrls = [];
-
+       const certificateUrls = [];
       // Ensure Certificates is iterable (array)
       const certificates = Array.isArray(req.files.Certificates)
-        ? req.files.Certificates
-        : [req.files.Certificates];
-
+      ? req.files.Certificates
+      : [req.files.Certificates];
+      
       for (const certificate of certificates) {
         const certificateResult = await cloudinary.uploader.upload(certificate.tempFilePath);
+        // let updatedata = {$push : {Certificates:certificateResult.secure_url}}
         certificateUrls.push(certificateResult.secure_url);
+        // await User.updateOne(id,updatedata)
       }
 
       updatedData.Certificates = certificateUrls;
