@@ -34,7 +34,40 @@ export const LoginUser = asyncHandler(async (req, res) => {
 
 export const GetUsers = asyncHandler(async (req, res) => {
 
-const result = await getUsers(req,res);
+  try {
+    const { page, size, search, sort } = req.query;
+
+    const paginationOptions = {
+      page: parseInt(page) || 1,
+      size: parseInt(size) || 1000000,
+    };
+
+    const filter = {
+      $or: [
+       { FirstName: { $regex: search || "", $options: "i" } },
+        { LastName: { $regex: search || "", $options: "i" } },
+        // Add more conditions if needed
+      ],
+    };
+
+    const sortingOptions = sort ? sort.split(",") : ["", ""];
+    const sortByField = sortingOptions[0];
+    const sortDirection = sortingOptions[1];
+    const sortBy = {};
+  if (sortByField) {
+    sortBy[sortByField] = sortDirection;
+  } else {
+    sortBy.FirstName = 1;
+  }
+
+    const result = await getUsers(paginationOptions, filter, sortBy);
+    res.status(200).send(result);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
   
 });
 
