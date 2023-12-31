@@ -97,6 +97,94 @@ deleteFile()
 });
 
 
+// export const addUser = asyncHandler(async (req, res) => {
+//   try {
+//     const {
+//       ComapnyEmplyeeID,
+//       ManagerId,
+//       JoiningDate,
+//       Certificates,
+//       JobTitle,
+//       MoblieNumber,
+//       CompanyName,
+//       Address,
+//       Department,
+//       Education,
+//       EmploymentStatus,
+//       WorkSedule,
+//       FirstName,
+//       LastName,
+//       Email,
+//       Password,
+//       locations,
+//       tasks,
+//     } = req.body;
+
+//     const hashpassword = await bcrypt.hash(Password, 10);
+//     let profilePictureUrl = "";
+//     let certificateUrls = [];
+
+//     if (req.files && req.files.ProfilePhoto) {
+//       const file = req.files.ProfilePhoto;
+//       const result = await cloudinary.uploader.upload(file.tempFilePath);
+//       profilePictureUrl = result.secure_url;
+//     }
+
+//     // Check if Certificates are provided in the request
+//     if (req.files && req.files.Certificates) {
+//       const certificates = Array.isArray(req.files.Certificates)
+//         ? req.files.Certificates
+//         : [req.files.Certificates];
+
+//       for (const certificate of certificates) {
+//         const certificateResult = await cloudinary.uploader.upload(certificate.tempFilePath);
+//         certificateUrls.push({
+//           image: certificateResult.secure_url,
+//           title: certificate.originalname, // You can adjust this based on your requirements
+//           description: "", // Add a description if available
+//           organization: "", // Add organization information if available
+//         });
+//       }
+//     }
+
+//     const user = await User.create({
+//       ComapnyEmplyeeID,
+//       ManagerId,
+//       JoiningDate,
+//       Certificates: certificateUrls,
+//       ProfilePhoto: profilePictureUrl,
+//       JobTitle,
+//       MoblieNumber,
+//       CompanyName,
+//       Address,
+//       Department,
+//       Education,
+//       EmploymentStatus,
+//       WorkSedule,
+//       FirstName,
+//       LastName,
+//       Email,
+//       Password: hashpassword,
+//       locations,
+//       tasks,
+//     });
+
+//     deleteFile();
+
+//     res.status(201).json({
+//       success: true,
+//       data: user,
+//     });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(400).json({
+//       success: false,
+//       error: error.message,
+//     });
+//   }
+// });
+
+
 export const loginUser = asyncHandler(async (req, res) => {
   const { Email, Password } = req.body;
 
@@ -146,19 +234,36 @@ export const loginUser = asyncHandler(async (req, res) => {
 });
 
 
-export const getUsers = asyncHandler(async (req, res) => {
+export const getUsers = asyncHandler(async (paginationOptions,filter,sort) => {
   try {
-    const user = await User.find();
+    const { page, size } = paginationOptions;
+    const totalDocuments = await User.countDocuments(filter);
+    const totalPages = Math.ceil(totalDocuments / size);
+    const skip = (page - 1) * size;
 
-    res.status(200).json({
-      success: true,
-      data: user,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: 'Server Error',
-    });
+    const collation = {
+      locale: 'en',  
+      strength: 2,
+    };
+
+    const success = await User.find(filter)
+    .collation(collation)
+    .sort(sort)
+    .skip(skip)
+    .limit(size);
+    
+
+    return {
+      page,
+      size,
+      data: success,
+      previousPage: page > 1 ? page - 1 : null,
+      nextPage: page < totalPages ? page + 1 : null,
+      totalDocuments,
+    };
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
   }
 });
 

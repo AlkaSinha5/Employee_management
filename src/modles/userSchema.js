@@ -5,7 +5,12 @@ const userSchema = new mongoose.Schema({
   ComapnyEmplyeeID: String, // Assuming it's a string, you can adjust the type
   ManagerId: String , // Assuming ManagerId is a reference to another User
   JoiningDate: Date,
-  Certificates: [String], // Assuming an array of strings, adjust as needed
+  Certificates:[{
+    image: String,
+    title: String,
+    description: String,
+    organization: String,
+  }], // Assuming an array of strings, adjust as needed
   ProfilePhoto: String,
   JobTitle: String,
   MoblieNumber: String, // Assuming it's a string, you can adjust the type
