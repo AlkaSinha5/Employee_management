@@ -178,3 +178,21 @@ export const getTasksByUserId = asyncHandler(async (req, res) => {
     data: incompleteTasks,
   });
 });
+
+// export const getTasksByUserId = asyncHandler(async (req, res) => {
+//   // console.log(req.params)
+//   const userId = req.params.id;
+//   // console.log(userId)
+
+//   // Fetch incomplete tasks by user ID
+//   const incompleteTasks = await Task.find({
+//    UserID: userId,
+
+  
+// });
+
+//   res.status(200).json({
+//     success: true,
+//     data: incompleteTasks,
+//   });
+// });

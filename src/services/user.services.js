@@ -13,33 +13,28 @@ cloudinary.config({
   api_secret: "WWmOJpVF5y02r7Blu2oAr0RxbU0",
 });
 
-export const addUser = asyncHandler(async (req, res) => {
+export const addUser = async (req, res) => {
   try {
-    const {
-      ComapnyEmplyeeID,
-      ManagerId,
-      JoiningDate,
-      Certificates,
-      JobTitle,
-      MoblieNumber,
-      CompanyName,
-      Address,
-      Department,
-      Education,
-      EmploymentStatus,
-      WorkSedule,
-      FirstName,
-      LastName,
-      Email,
-      Password,
-      locations,
-      tasks,
-    } = req.body;
+      const {  ComapnyEmplyeeID,
+        ManagerId,
+        JoiningDate,
+        Certificates,
+        JobTitle,
+        MoblieNumber,
+        CompanyName,
+        Address,
+        Department,
+        Education,
+        EmploymentStatus,
+        WorkSedule,
+        FirstName,
+        LastName,
+        Email,
+        Password,
+        locations,
+        tasks,} = req.body
 
-    // console.log("Request Body:", req.body);
-    // console.log("Request Files:", req.files);
-
-    const hashpassword = await bcrypt.hash(Password, 10);
+      const hashpassword = await bcrypt.hash(Password, 10);
     let profilePictureUrl = "";
     let certificateUrls = [];
 
@@ -60,41 +55,126 @@ export const addUser = asyncHandler(async (req, res) => {
         certificateUrls.push(certificateResult.secure_url);
       }
     }
+      const userData = new User({
+        ComapnyEmplyeeID:ComapnyEmplyeeID,
+        ManagerId:ManagerId,
+        JoiningDate:JoiningDate,
+        Certificates: Certificates,
+       ProfilePhoto: profilePictureUrl,
+        JobTitle: JobTitle,
+        MoblieNumber: MoblieNumber,
+        CompanyName: CompanyName,
+        Address: Address,
+        Department: Department,
+        Education: Education,
+        EmploymentStatus: EmploymentStatus,
+        WorkSedule:WorkSedule,
+        FirstName: FirstName,
+        LastName: LastName,
+        Email: Email,
+        Password: hashpassword,
+        locations:locations,
+        tasks: tasks,
+      })
+     
+      const result = await userData.save()
+     
+ 
+     deleteFile()
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+}
+// export const addUser = asyncHandler(async (req, res) => {
+//   try {
+//     const {
+//       ComapnyEmplyeeID,
+//       ManagerId,
+//       JoiningDate,
+//       Certificates,
+//       JobTitle,
+//       MoblieNumber,
+//       CompanyName,
+//       Address,
+//       Department,
+//       Education,
+//       EmploymentStatus,
+//       WorkSedule,
+//       FirstName,
+//       LastName,
+//       Email,
+//       Password,
+//       locations,
+//       tasks,
+//     } = req.body;
 
-    const user = await User.create({
-      ComapnyEmplyeeID,
-      ManagerId,
-      JoiningDate,
-      Certificates: certificateUrls,
-      ProfilePhoto: profilePictureUrl,
-      JobTitle,
-      MoblieNumber,
-      CompanyName,
-      Address,
-      Department,
-      Education,
-      EmploymentStatus,
-      WorkSedule,
-      FirstName,
-      LastName,
-      Email,
-      Password: hashpassword,
-      locations,
-      tasks,
-    });
-deleteFile()
-    res.status(201).json({
-      success: true,
-      data: user,
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(400).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
+//     // console.log("Request Body:", req.body);
+//     // console.log("Request Files:", req.files);
+
+//     const hashpassword = await bcrypt.hash(Password, 10);
+//     let profilePictureUrl = "";
+//     let certificateUrls = [];
+
+//     if (req.files && req.files.ProfilePhoto) {
+//       const file = req.files.ProfilePhoto;
+//       const result = await cloudinary.uploader.upload(file.tempFilePath);
+//       profilePictureUrl = result.secure_url;
+//     }
+
+//     // Check if Certificates are provided in the request
+//     if (req.files && req.files.Certificates) {
+//       const certificates = Array.isArray(req.files.Certificates)
+//         ? req.files.Certificates
+//         : [req.files.Certificates];
+
+//       for (const certificate of certificates) {
+//         const certificateResult = await cloudinary.uploader.upload(certificate.tempFilePath);
+//         certificateUrls.push(certificateResult.secure_url);
+//       }
+//     }
+
+//     const user = await User.create({
+//       ComapnyEmplyeeID,
+//       ManagerId,
+//       JoiningDate,
+//       Certificates: certificateUrls,
+//       ProfilePhoto: profilePictureUrl,
+//       JobTitle,
+//       MoblieNumber,
+//       CompanyName,
+//       Address,
+//       Department,
+//       Education,
+//       EmploymentStatus,
+//       WorkSedule,
+//       FirstName,
+//       LastName,
+//       Email,
+//       Password: hashpassword,
+//       locations,
+//       tasks,
+//     });
+// deleteFile()
+//     res.status(201).json({
+//       success: true,
+//       data: user,
+//     });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(400).json({
+//       success: false,
+//       error: error.message,
+//     });
+//   }
+// });
 
 
 // export const addUser = asyncHandler(async (req, res) => {
@@ -451,4 +531,33 @@ const deleteFile = () => {
   }
 };
 
+
+export const logoutUser = (req, res) => {
+  const tokenHeader = req.headers.authorization;
+
+  if (!tokenHeader) {
+    return res.status(401).json({
+      success: false,
+      message: 'No token provided',
+    });
+  }
+
+  // Extract the token without the "Bearer " prefix
+  const token = tokenHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.secretKey);
+
+    res.status(200).json({
+      success: true,
+      message: 'Logout successful',
+    });
+  } catch (error) {
+    // Handle token verification errors
+    res.status(401).json({
+      success: false,
+      message: 'Invalid token',
+    });
+  }
+};
 

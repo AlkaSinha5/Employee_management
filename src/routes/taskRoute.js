@@ -14,8 +14,8 @@ const router =express.Router();
 //     next();
 //   };
 
-router.post("/addTask",verifyToken, Addtask);
-router.get("/getTask" ,verifyToken,GetAlltaskData);
+router.post("/addTask", Addtask);
+router.get("/getTask" ,GetAlltaskData);
 router.delete("/deteteTask/:id",verifyToken, Deletetask);
 router.put("/updateTask/:id",verifyToken, Updatetask);
 router.get("/getTaskById/:id",verifyToken, GettaskById);
