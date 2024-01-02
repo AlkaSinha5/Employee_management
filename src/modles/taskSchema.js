@@ -10,7 +10,7 @@ const taskSchema = new mongoose.Schema({
   tasks: [
     {
       task: String,
-      completed: Boolean,
+      completed: {type:Boolean, default: false},
       _id:false,
     },
   ],
