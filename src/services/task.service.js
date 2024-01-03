@@ -5,7 +5,7 @@ import User from "../modles/userSchema.js"
 // Create a task
 export const addTaskData = asyncHandler(async (req, res) => {
   try {
-    const { UserID, tasks,Date ,description} = req.body;
+    const { UserID, completedDate, task, completed, description } = req.body;
 
     const user = await User.findOne({ _id: UserID });
 
@@ -16,28 +16,21 @@ export const addTaskData = asyncHandler(async (req, res) => {
       });
     }
 
-    // Assuming tasks is an array of task objects
-    const newTasks = tasks.map(task => ({
-      task: task.task,
-      completed: task.completed,
-      Date: task.Date,
-      description: task.description,
-    }));
+    const taskData = await Task.create({
+      UserID,
+      completedDate,
+      task,
+      completed,
+      description,
+    });
 
-    const createdTasks = await Task.insertMany(
-      // tasks.map(task => ({ ...task, UserID: user._id }))
-      // newTasks.map(task => ({ tasks:task, UserID: user._id }))
-      {tasks:tasks, UserID: user._id,Date:Date,description:description}
-
-    );
-
-    // Assuming each task has an _id property
-    user.tasks.push(...createdTasks.map(task => task._id));
+    // Add the new task's _id to the user's tasks array
+    user.tasks.push(taskData._id);
     await user.save();
 
     res.status(201).json({
       success: true,
-      data: createdTasks,
+      data: taskData,
     });
   } catch (error) {
     console.error('Error:', error);
@@ -48,10 +41,11 @@ export const addTaskData = asyncHandler(async (req, res) => {
   }
 });
 
+
 // Get all tasks
 export const getAllTasks = asyncHandler(async (req, res) => {
   try {
-    const tasks = await Task.find().lean();
+    const tasks = await Task.find();
 
     res.status(200).json({
       success: true,
@@ -116,24 +110,18 @@ export const deleteTask = asyncHandler(async (req, res) => {
 export const updateTask = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const { description, completed, tasks } = req.body;
+    const {  completedDate, task, completed, description } = req.body;
 
     // Update the tasks array and description
     const updatedData = {
-      tasks: tasks,
+      compledDate:completedDate,
+      task: task,
+      completed: completed,
       description: description,
     };
 
-    // If 'completed' is provided, update the 'completed' field as well
-    if (completed !== undefined) {
-      updatedData.tasks.forEach((task, index) => {
-        if (tasks[index].completed !== undefined) {
-          updatedData.tasks[index].completed = tasks[index].completed;
-        } else {
-          updatedData.tasks[index].completed = completed;
-        }
-      });
-    }
+   
+    
 
     const updatedTask = await Task.findByIdAndUpdate(
       id,
@@ -162,22 +150,52 @@ export const updateTask = asyncHandler(async (req, res) => {
 });
 
 export const getTasksByUserId = asyncHandler(async (req, res) => {
-  // console.log(req.params)
   const userId = req.params.id;
-  // console.log(userId)
 
-  // Fetch incomplete tasks by user ID
-  const incompleteTasks = await Task.find({
-   UserID: userId,
-   'tasks.completed': false,
+
+  const Tasks = await Task.find({
+    "UserID": userId,
   
-});
+  });
 
   res.status(200).json({
     success: true,
-    data: incompleteTasks,
+    data: Tasks,
   });
 });
+
+export const getcompetedTasksByUserId = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+
+
+  const Tasks = await Task.find({
+    "UserID": userId,
+    "completed": true,
+  
+  });
+
+  res.status(200).json({
+    success: true,
+    data: Tasks,
+  });
+});
+
+export const getIncompetedTasksByUserId = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+
+
+  const Tasks = await Task.find({
+    "UserID": userId,
+    "completed": false,
+  
+  });
+
+  res.status(200).json({
+    success: true,
+    data: Tasks,
+  });
+});
+
 
 // export const getTasksByUserId = asyncHandler(async (req, res) => {
 //   // console.log(req.params)

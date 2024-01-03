@@ -1,5 +1,5 @@
 import  express  from "express";
-import { Addtask, Deletetask, GetAlltaskData, GetTasksByUserId, GettaskById, Updatetask } from "../controllers/task.controller.js";
+import { Addtask, Deletetask, GetAlltaskData, GetIncompetedTasksByUserId, GetTasksByUserId, GetcompetedTasksByUserId, GettaskById, Updatetask } from "../controllers/task.controller.js";
 import { verifyToken } from "../helper/token_verify.js";
 
 
@@ -19,7 +19,10 @@ router.get("/getTask" ,GetAlltaskData);
 router.delete("/deteteTask/:id",verifyToken, Deletetask);
 router.put("/updateTask/:id",verifyToken, Updatetask);
 router.get("/getTaskById/:id",verifyToken, GettaskById);
-router.get("/getTaskByUserId/:id",verifyToken,GetTasksByUserId)
+router.get("/getTaskByUserId/:id",GetTasksByUserId);
+router.get("/getCompletedTaskByUserId/:id",GetcompetedTasksByUserId);
+router.get("/getIncompletedTaskByUserId/:id",GetIncompetedTasksByUserId);
+
 
 
 
