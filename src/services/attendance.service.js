@@ -3,6 +3,8 @@ import Attendance from "../modles/attendanceSchema.js";
 import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 import fs from "fs";
+import moment from 'moment';
+
 
 
 export const addAttendance = asyncHandler(async (req, res) => {
@@ -155,6 +157,90 @@ export const updateAttendence = asyncHandler(async (req, res) => {
   }
 });
 
+function countSundaysInMonth(year, month) {
+  const firstDay = moment(`${year}-${month}-01`, 'YYYY-MM-DD');
+  const lastDay = moment(firstDay).endOf('month');
+
+  let count = 0;
+
+  while (firstDay.dayOfYear() <= lastDay.dayOfYear()) {
+    if (firstDay.day() === 0) {
+      // Sunday is represented by 0
+      count++;
+    }
+    firstDay.add(1, 'days');
+  }
+
+  return count;
+}
+
+export const getAttendenceByUserId = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+
+  const getAttendence = await Attendance.find({
+    "UserID": userId,
+  });
+
+  // Grouping the attendance data by month
+  const groupedByMonth = getAttendence.reduce((acc, attendance) => {
+    const monthYear = moment(attendance.attendenceDate).format('MMMM YYYY');
+    let month = moment(attendance.attendanceDate).format('MMMM');
+    let year = moment(attendance.attendanceDate).format('YYYY');
+    
+    
+    
+    
+    const sundayCount = countSundaysInMonth(year, month);
+    // console.log(`There are ${sundayCount} Sundays in ${moment(`${year}-${month}-01`).format('MMMM YYYY')}.`);
+
+    if (!acc[monthYear]) {
+      acc[monthYear] = {
+        data: [],
+        counts: {
+          Present: 0,
+          Leave: 0,
+          Sunday: sundayCount,
+        },
+      };
+    }
+
+    // Increment counts based on the status
+    switch (attendance.Status) {
+      case 'Present':
+        acc[monthYear].counts.Present += 1;
+        break;
+      case 'Leave':
+        acc[monthYear].counts.Leave += 1;
+        break;
+      // Check if the day is a Sunday
+      
+      case 'Sunday':
+        if (moment(attendance.attendenceDate).isoWeekday() === 7) {
+          acc[monthYear].counts.Sunday += 1;
+        }
+        break;
+      default:
+        // Handle other statuses if needed
+        break;
+    }
+
+    acc[monthYear].data.push(attendance);
+    
+    return acc;
+  }, {});
+
+  // Transform the grouped data into the specified format
+  const formattedData = Object.entries(groupedByMonth).map(([monthYear, { data, counts }]) => ({
+    monthYear,
+    data,
+    counts,
+  }));
+
+  res.status(200).json({
+    success: true,
+    data: formattedData,
+  });
+});
 
 
 
@@ -186,8 +272,7 @@ export const getAttendenceCount = asyncHandler(async (req,res) => {
       date,
       attendanceCount: [
         { _id: 'Present', count: 0 },
-        { _id: 'Absent', count: 0 },
-        { _id: 'Leave', count: 0 },
+       { _id: 'Leave', count: 0 },
       ],
     };
 
@@ -254,14 +339,12 @@ export const getStatusMothWise = asyncHandler(async (req,res) => {
 
     // Count occurrences of "Present," "Absent," and "Leave"
     let presentCount = 0;
-    let absentCount = 0;
     let leaveCount = 0;
 
     monthlyStatus.forEach((attendance) => {
       if (attendance.Status === 'Present') {
         presentCount++;
-      } else if (attendance.Status === 'Absent') {
-        absentCount++;
+    
       } else if (attendance.Status === 'Leave') {
         leaveCount++;
       }
@@ -273,7 +356,6 @@ export const getStatusMothWise = asyncHandler(async (req,res) => {
         monthlyStatus,
         counts: {
           present: presentCount,
-          absent: absentCount,
           leave: leaveCount
         }
       }

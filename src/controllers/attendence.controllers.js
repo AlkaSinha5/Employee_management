@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler"
-import { addAttendance, deleteAttendence, getAttendence, getAttendenceById, getAttendenceCount, getStatusMothWise, getperDayStatus, updateAttendence} from "../services/attendance.service.js";
+import { addAttendance, deleteAttendence, getAttendence, getAttendenceById,  getAttendenceByUserId,  getAttendenceCount,  getStatusMothWise,  getperDayStatus,  updateAttendence} from "../services/attendance.service.js";
 
 
 export const AddAttendence = asyncHandler(async (req, res) => {
@@ -12,7 +12,7 @@ export const GetAttendence = asyncHandler(async (req, res) => {
   
       const paginationOptions = {
         page: parseInt(page) || 1,
-        size: parseInt(size) || 10,
+        size: parseInt(size) || 10000000,
       };
   
       const filter = {
@@ -67,4 +67,8 @@ export const GetAttendence = asyncHandler(async (req, res) => {
 
   export const GetStatusMonthWise = asyncHandler(async (req, res) => {
     const result = await getStatusMothWise(req,res);
+  });
+
+  export const GetAttendenceByUserId = asyncHandler(async (req, res) => {
+    const result = await getAttendenceByUserId(req,res);
   });
