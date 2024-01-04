@@ -4,6 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 import fs from "fs";
 import moment from 'moment';
+import Salary from '../modles/sallarySchema.js'
 
 
 
@@ -234,11 +235,11 @@ export const getAttendenceByUserId = asyncHandler(async (req, res) => {
   }, {});
 
   // Transform the grouped data into the specified format
-  const formattedData = Object.entries(groupedByMonth).map(([monthYear, { data, counts, salary }]) => ({
+  const formattedData = Object.entries(groupedByMonth).map(([monthYear, { data, counts}]) => ({
     monthYear,
     data,
     counts,
-    salary,
+    // salary,
   }));
 
   
@@ -249,9 +250,108 @@ export const getAttendenceByUserId = asyncHandler(async (req, res) => {
   });
 });
 
+
+
+// export const getSallaryByUserId = asyncHandler(async (req, res) => {
+//   const userId = req.params.id;
+//   const Sallary = req.body.salary;
+
+//   const getAttendence = await Attendance.find({
+//     "UserID": userId,
+//   });
+
+//   // Grouping the attendance data by month
+//   const groupedByMonth = getAttendence.reduce((acc, attendance) => {
+//     const monthYear = moment(attendance.attendenceDate).format('MMMM YYYY');
+//     let month = moment(attendance.attendenceDate).format('MMMM');
+//     let year = moment(attendance.attendenceDate).format('YYYY');
+
+//     const sundayCount = countSundaysInMonth(year, month);
+
+//     if (!acc[monthYear]) {
+//       acc[monthYear] = {
+//         data: [],
+//         counts: {
+//           Present: 0,
+//           Leave: 0,
+//           Holiday: 0,
+//           Sunday: sundayCount,
+//         },
+//       };
+//     }
+
+//     // Increment counts based on the status
+//     switch (attendance.Status) {
+//       case 'Present':
+//         acc[monthYear].counts.Present += 1;
+//         break;
+//       case 'Leave':
+//         acc[monthYear].counts.Leave += 1;
+//         break;
+//       case 'Holiday':
+//         acc[monthYear].counts.Holiday += 1;
+//         break;
+//       case 'Sunday':
+//         if (moment(attendance.attendenceDate).isoWeekday() === 7) {
+//           acc[monthYear].counts.Sunday += 1;
+//         }
+//         break;
+//       default:
+//         // Handle other statuses if needed
+//         break;
+//     }
+
+//     acc[monthYear].data.push(attendance);
+
+//     return acc;
+//   }, {});
+
+//   // Transform the grouped data into the specified format
+//   const formattedData = Object.entries(groupedByMonth).map(([monthYear, { data, counts }]) => {
+//     const daysInMonth = moment(monthYear, 'MMMM YYYY').daysInMonth();
+//     const sallarydestribution = (Sallary / daysInMonth).toFixed(2);
+//     const presents = counts.Present;
+//     const leaves = counts.Leave;
+//     const holidays = counts.Holiday;
+//     const Sundays = counts.Sunday;
+//     const workingDay = presents + holidays + Sundays ;
+//     const getSallary = workingDay * sallarydestribution;
+//     const salaryEntry = new Salary({
+//       userId: userId,
+//       monthYear: monthYear,
+//       present: presents,
+//       leave: leaves,
+//       holiday: holidays,
+//       sunday: Sundays,
+//       totalDays: daysInMonth,
+//       sallaryDistribution: sallarydestribution,
+//       getSallary: getSallary,
+//     });
+
+//     salaryEntry.save();
+
+//     return {
+//       monthYear,
+//       counts: {
+//         Present: presents,
+//         Leave: leaves,
+//         Holiday: holidays,
+//         Sunday: Sundays,
+//         TotalDays: daysInMonth,
+//         // SallaryDistribution: sallarydestribution,
+//         GetSallary: getSallary,
+//       },
+//     };
+//   });
+
+//   res.status(200).json({
+//     success: true,
+//     data: formattedData,
+//   });
+// });
 export const getSallaryByUserId = asyncHandler(async (req, res) => {
   const userId = req.params.id;
-  const salary = req.body.salary; // Assuming 'salary' is a parameter in the request body
+  const Sallary = req.body.salary;
 
   const getAttendence = await Attendance.find({
     "UserID": userId,
@@ -274,7 +374,6 @@ export const getSallaryByUserId = asyncHandler(async (req, res) => {
           Holiday: 0,
           Sunday: sundayCount,
         },
-        salary: 0, // Initialize salary for the month
       };
     }
 
@@ -282,24 +381,16 @@ export const getSallaryByUserId = asyncHandler(async (req, res) => {
     switch (attendance.Status) {
       case 'Present':
         acc[monthYear].counts.Present += 1;
-        // Add the salary for a present day
-        acc[monthYear].salary += parseFloat(salary);
         break;
       case 'Leave':
         acc[monthYear].counts.Leave += 1;
-        // Deduct the salary for a leave day
-        acc[monthYear].salary -= parseFloat(salary);
         break;
       case 'Holiday':
         acc[monthYear].counts.Holiday += 1;
-        // Add the salary for a holiday
-        acc[monthYear].salary += parseFloat(salary);
         break;
       case 'Sunday':
         if (moment(attendance.attendenceDate).isoWeekday() === 7) {
           acc[monthYear].counts.Sunday += 1;
-          // Add the salary for a Sunday
-          acc[monthYear].salary += parseFloat(salary);
         }
         break;
       default:
@@ -313,35 +404,54 @@ export const getSallaryByUserId = asyncHandler(async (req, res) => {
   }, {});
 
   // Transform the grouped data into the specified format
-  const formattedData = Object.entries(groupedByMonth).map(([monthYear, { data, counts, salary }]) => ({
-    monthYear,
-    data,
-    counts,
-    salary,
-  }));
+  const formattedData = Object.entries(groupedByMonth).map(([monthYear, { data, counts }]) => {
+    const daysInMonth = moment(monthYear, 'MMMM YYYY').daysInMonth();
+    const sallarydestribution = (Sallary / daysInMonth).toFixed(2);
+    const presents = counts.Present;
+    const leaves = counts.Leave;
+    // let leaveCount
+    // if(leaves >0){
+    // leaveCount= leaves-1;
+    // }else{
+    //   leaveCount = leaves;
+    // }
+    // const workingDay = daysInMonth -leaveCount;
+    const holidays = counts.Holiday;
+    const Sundays = counts.Sunday;
+    const workingDay = presents + holidays + Sundays;
+    const getSallary = workingDay * sallarydestribution;
 
-  formattedData.forEach(({ monthYear, counts, salary }) => {
-    const presentCount = counts.Present;
-    const leaveCount = counts.Leave;
-    const holidayCount = counts.Holiday;
-    const sundayCount = counts.Sunday;
+    // Check if the current iteration corresponds to the current month
+    const isCurrentMonth = moment(monthYear, 'MMMM YYYY').isSame(moment(), 'month');
 
-    // Get the total number of days in the month
-    const totalDaysInMonth = moment(`${monthYear}-01`).daysInMonth();
+    // Save salary entry only for the current month
+    if (isCurrentMonth) {
+      const salaryEntry = new Salary({
+        userId: userId,
+        monthYear: monthYear,
+        present: presents,
+        leave: leaves,
+        holiday: holidays,
+        sunday: Sundays,
+        totalDays: daysInMonth,
+        sallaryDistribution: sallarydestribution,
+        getSallary: getSallary,
+      });
 
-    const totalDays = presentCount + leaveCount + holidayCount + sundayCount;
+      salaryEntry.save();
+    }
 
-    const absentCount = totalDaysInMonth - presentCount;
-
-    console.log(`Month: ${monthYear}`);
-    console.log(`Present: ${presentCount}`);
-    console.log(`Absent: ${absentCount}`);
-    console.log(`Sunday: ${sundayCount}`);
-    console.log(`Leave: ${leaveCount}`);
-    console.log(`Holidays: ${holidayCount}`);
-    console.log(`Total Days in Month: ${totalDaysInMonth}`);
-    console.log(`Salary: ${salary}`);
-    console.log('------------------------');
+    return {
+      monthYear,
+      counts: {
+        Present: presents,
+        Leave: leaves,
+        Holiday: holidays,
+        Sunday: Sundays,
+        TotalDays: daysInMonth,
+        GetSallary: getSallary,
+      },
+    };
   });
 
   res.status(200).json({
@@ -349,7 +459,6 @@ export const getSallaryByUserId = asyncHandler(async (req, res) => {
     data: formattedData,
   });
 });
-
 
 
 
