@@ -176,6 +176,7 @@ function countSundaysInMonth(year, month) {
 
 export const getAttendenceByUserId = asyncHandler(async (req, res) => {
   const userId = req.params.id;
+ 
 
   const getAttendence = await Attendance.find({
     "UserID": userId,
@@ -184,14 +185,10 @@ export const getAttendenceByUserId = asyncHandler(async (req, res) => {
   // Grouping the attendance data by month
   const groupedByMonth = getAttendence.reduce((acc, attendance) => {
     const monthYear = moment(attendance.attendenceDate).format('MMMM YYYY');
-    let month = moment(attendance.attendanceDate).format('MMMM');
-    let year = moment(attendance.attendanceDate).format('YYYY');
-    
-    
-    
-    
+    let month = moment(attendance.attendenceDate).format('MMMM');
+    let year = moment(attendance.attendenceDate).format('YYYY');
+
     const sundayCount = countSundaysInMonth(year, month);
-    // console.log(`There are ${sundayCount} Sundays in ${moment(`${year}-${month}-01`).format('MMMM YYYY')}.`);
 
     if (!acc[monthYear]) {
       acc[monthYear] = {
@@ -202,6 +199,7 @@ export const getAttendenceByUserId = asyncHandler(async (req, res) => {
           Holiday: 0,
           Sunday: sundayCount,
         },
+       
       };
     }
 
@@ -209,18 +207,20 @@ export const getAttendenceByUserId = asyncHandler(async (req, res) => {
     switch (attendance.Status) {
       case 'Present':
         acc[monthYear].counts.Present += 1;
+    
         break;
       case 'Leave':
         acc[monthYear].counts.Leave += 1;
+        
         break;
       case 'Holiday':
-          acc[monthYear].counts.Holiday += 1;
-          break;
-      // Check if the day is a Sunday
-      
+        acc[monthYear].counts.Holiday += 1;
+        
+        break;
       case 'Sunday':
         if (moment(attendance.attendenceDate).isoWeekday() === 7) {
           acc[monthYear].counts.Sunday += 1;
+          
         }
         break;
       default:
@@ -229,22 +229,127 @@ export const getAttendenceByUserId = asyncHandler(async (req, res) => {
     }
 
     acc[monthYear].data.push(attendance);
-    
+
     return acc;
   }, {});
 
   // Transform the grouped data into the specified format
-  const formattedData = Object.entries(groupedByMonth).map(([monthYear, { data, counts }]) => ({
+  const formattedData = Object.entries(groupedByMonth).map(([monthYear, { data, counts, salary }]) => ({
     monthYear,
     data,
     counts,
+    salary,
   }));
+
+  
 
   res.status(200).json({
     success: true,
     data: formattedData,
   });
 });
+
+export const getSallaryByUserId = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  const salary = req.body.salary; // Assuming 'salary' is a parameter in the request body
+
+  const getAttendence = await Attendance.find({
+    "UserID": userId,
+  });
+
+  // Grouping the attendance data by month
+  const groupedByMonth = getAttendence.reduce((acc, attendance) => {
+    const monthYear = moment(attendance.attendenceDate).format('MMMM YYYY');
+    let month = moment(attendance.attendenceDate).format('MMMM');
+    let year = moment(attendance.attendenceDate).format('YYYY');
+
+    const sundayCount = countSundaysInMonth(year, month);
+
+    if (!acc[monthYear]) {
+      acc[monthYear] = {
+        data: [],
+        counts: {
+          Present: 0,
+          Leave: 0,
+          Holiday: 0,
+          Sunday: sundayCount,
+        },
+        salary: 0, // Initialize salary for the month
+      };
+    }
+
+    // Increment counts based on the status
+    switch (attendance.Status) {
+      case 'Present':
+        acc[monthYear].counts.Present += 1;
+        // Add the salary for a present day
+        acc[monthYear].salary += parseFloat(salary);
+        break;
+      case 'Leave':
+        acc[monthYear].counts.Leave += 1;
+        // Deduct the salary for a leave day
+        acc[monthYear].salary -= parseFloat(salary);
+        break;
+      case 'Holiday':
+        acc[monthYear].counts.Holiday += 1;
+        // Add the salary for a holiday
+        acc[monthYear].salary += parseFloat(salary);
+        break;
+      case 'Sunday':
+        if (moment(attendance.attendenceDate).isoWeekday() === 7) {
+          acc[monthYear].counts.Sunday += 1;
+          // Add the salary for a Sunday
+          acc[monthYear].salary += parseFloat(salary);
+        }
+        break;
+      default:
+        // Handle other statuses if needed
+        break;
+    }
+
+    acc[monthYear].data.push(attendance);
+
+    return acc;
+  }, {});
+
+  // Transform the grouped data into the specified format
+  const formattedData = Object.entries(groupedByMonth).map(([monthYear, { data, counts, salary }]) => ({
+    monthYear,
+    data,
+    counts,
+    salary,
+  }));
+
+  formattedData.forEach(({ monthYear, counts, salary }) => {
+    const presentCount = counts.Present;
+    const leaveCount = counts.Leave;
+    const holidayCount = counts.Holiday;
+    const sundayCount = counts.Sunday;
+
+    // Get the total number of days in the month
+    const totalDaysInMonth = moment(`${monthYear}-01`).daysInMonth();
+
+    const totalDays = presentCount + leaveCount + holidayCount + sundayCount;
+
+    const absentCount = totalDaysInMonth - presentCount;
+
+    console.log(`Month: ${monthYear}`);
+    console.log(`Present: ${presentCount}`);
+    console.log(`Absent: ${absentCount}`);
+    console.log(`Sunday: ${sundayCount}`);
+    console.log(`Leave: ${leaveCount}`);
+    console.log(`Holidays: ${holidayCount}`);
+    console.log(`Total Days in Month: ${totalDaysInMonth}`);
+    console.log(`Salary: ${salary}`);
+    console.log('------------------------');
+  });
+
+  res.status(200).json({
+    success: true,
+    data: formattedData,
+  });
+});
+
 
 
 
