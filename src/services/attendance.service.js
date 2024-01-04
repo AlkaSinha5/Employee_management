@@ -199,6 +199,7 @@ export const getAttendenceByUserId = asyncHandler(async (req, res) => {
         counts: {
           Present: 0,
           Leave: 0,
+          Holiday: 0,
           Sunday: sundayCount,
         },
       };
@@ -212,6 +213,9 @@ export const getAttendenceByUserId = asyncHandler(async (req, res) => {
       case 'Leave':
         acc[monthYear].counts.Leave += 1;
         break;
+      case 'Holiday':
+          acc[monthYear].counts.Holiday += 1;
+          break;
       // Check if the day is a Sunday
       
       case 'Sunday':
