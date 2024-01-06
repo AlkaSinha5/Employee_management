@@ -29,9 +29,11 @@ export const addUser = async (req, res) => {
         FirstName,
         LastName,
         Email,
+        Salary,
         Password,
         locations,
         tasks,} = req.body
+        console.log(req.body)
 
       const hashpassword = await bcrypt.hash(Password, 10);
     let profilePictureUrl = "";
@@ -54,6 +56,7 @@ export const addUser = async (req, res) => {
         MoblieNumber: MoblieNumber,
         CompanyName: CompanyName,
         Address: Address,
+        Salary: Salary,
         Department: Department,
         Education: Education,
         EmploymentStatus: EmploymentStatus,
@@ -117,6 +120,7 @@ export const loginUser = asyncHandler(async (req, res) => {
         MoblieNumber: user.MoblieNumber,
         CompanyName: user.CompanyName,
         Address: user.Address,
+        Salary:user. Salary,
         Department: user.Department,
         Education: user.Education,
         EmploymentStatus: user.EmploymentStatus,

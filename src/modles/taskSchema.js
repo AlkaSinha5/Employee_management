@@ -7,7 +7,10 @@ const taskSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  completedDate:Date,
+  completedDate:{
+    type: Date,
+    default: Date.now,
+  },
 
   task: String,
   completed: {type:Boolean, default: false},
