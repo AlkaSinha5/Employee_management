@@ -17,7 +17,7 @@ const router =express.Router();
 router.post("/addTask", Addtask);
 router.get("/getTask" ,GetAlltaskData);
 router.delete("/deteteTask/:id",verifyToken, Deletetask);
-router.put("/updateTask/:id",verifyToken, Updatetask);
+router.put("/updateTask/:id", Updatetask);
 router.get("/getTaskById/:id",verifyToken, GettaskById);
 router.get("/getTaskByUserId/:id",GetTasksByUserId);
 router.get("/getCompletedTaskByUserId/:id",GetcompetedTasksByUserId);

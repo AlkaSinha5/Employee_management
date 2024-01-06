@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
   LastName: { type: String},
   Email: { type: String },
   Password: { type: String},
+  Salary: {type: String, default: ''},
   locations: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Location',

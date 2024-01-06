@@ -26,7 +26,9 @@ router.delete("/deleteUser/:id", DeleteUser);
 router.put("/updateUser/:id",UpdateUser );
 router.put("/updateByUser/:id",verifyToken,UpdateDataByUser);
 router.get("/getUserById/:id", GetUserById);
-router.post("/logout",LogoutUser)
+router.post("/logout",LogoutUser);
+
+
 
 
 

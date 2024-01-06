@@ -110,6 +110,7 @@ export const deleteTask = asyncHandler(async (req, res) => {
 export const updateTask = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
+    console.log(id)
     const {  completedDate, task, completed, description } = req.body;
 
     // Update the tasks array and description
