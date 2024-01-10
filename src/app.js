@@ -30,7 +30,7 @@ app.use(bodyParser.json());
 
  app.use('/receipts', express.static(process.cwd() + '/receipts'))
 
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('*/15 * * * *', async () => {
   try {
     const response = await axios.get('https://employee-management-u6y6.onrender.com/app/dumy/getDummy');
     console.log("API call successful:", response.data);
