@@ -28,19 +28,24 @@ app.use(bodyParser.json());
  app.use("/app",routes )
 // app.use(errorHandler);
 
-//  app.use('/receipts', express.static(process.cwd() + '/receipts'))
+ app.use('/receipts', express.static(process.cwd() + '/receipts'))
 
-// cron.schedule('*/1 * * * *', async () => {
-//   try {
-//     const response = await axios.get('https://employee-management-u6y6.onrender.com/app/dumy/getDummy');
-//     console.log("API call successful:", response.data);
-//   } catch (error) {
-//     console.error("Error making API call:", error.message);
-//   }
-// });
+cron.schedule('*/15 * * * *', async () => {
+  try {
+    const response = await axios.get('https://employee-management-u6y6.onrender.com/app/dumy/getDummy');
+    console.log("API call successful:", response.data);
+  } catch (error) {
+    console.error("Error making API call:", error.message);
+  }
+});
+
+
+
 // cron.schedule('*/15 * * * *', () => {
 //   console.log("app running");
 // })
+
+
 
 app.use((req, res, next) => {
   res.status(404).json({
