@@ -9,7 +9,8 @@ import taskRoutes from "./taskRoute.js";
 import adminRoutes from "./adminRoute.js";
 import certificatsRoutes from "./certificatesRoute.js";
 import holidayRoutes from "./holidayRoute.js";
-import salaryRoutes from "./salaryRoute.js"
+import salaryRoutes from "./salaryRoute.js";
+import dummy from "./dummy.route.js";
 
 const router =express.Router();
 
@@ -24,6 +25,7 @@ router.use("/admin",adminRoutes);
 router.use("/certificates", certificatsRoutes);
 router.use ("/holiday" , holidayRoutes);
 router.use("/salary" ,salaryRoutes);
+router.use("/dumy", dummy);
 
 
 
