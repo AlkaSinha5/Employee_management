@@ -1,6 +1,6 @@
 import express from "express";
-// import cron from "node-cron";
-// import axios from "axios";
+import cron from "node-cron";
+import axios from "axios";
 import database from "./config/mongodb.js";
 import routes from "./routes/index.js";
 import fileUpload from "express-fileupload";
@@ -28,11 +28,11 @@ app.use(bodyParser.json());
  app.use("/app",routes )
 // app.use(errorHandler);
 
-// app.use('/receipts', express.static(process.cwd() + '/receipts'))
+//  app.use('/receipts', express.static(process.cwd() + '/receipts'))
 
-// cron.schedule('*/15 * * * *', async () => {
+// cron.schedule('*/1 * * * *', async () => {
 //   try {
-//     const response = await axios.get('https://inventory-phsl.onrender.com/api/dumy/getDummy');
+//     const response = await axios.get('https://employee-management-u6y6.onrender.com/app/dumy/getDummy');
 //     console.log("API call successful:", response.data);
 //   } catch (error) {
 //     console.error("Error making API call:", error.message);
