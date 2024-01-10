@@ -157,12 +157,12 @@ export const getUsers = asyncHandler(async (paginationOptions,filter,sort) => {
     
 
     return {
-      page,
-      size,
+      // page,
+      // size,
       data: success,
-      previousPage: page > 1 ? page - 1 : null,
-      nextPage: page < totalPages ? page + 1 : null,
-      totalDocuments,
+      // previousPage: page > 1 ? page - 1 : null,
+      // nextPage: page < totalPages ? page + 1 : null,
+      // totalDocuments,
     };
   } catch (e) {
     console.log(e);
