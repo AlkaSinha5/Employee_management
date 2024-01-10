@@ -38,6 +38,9 @@ cron.schedule('*/15 * * * *', async () => {
     console.error("Error making API call:", error.message);
   }
 });
+
+
+
 // cron.schedule('*/15 * * * *', () => {
 //   console.log("app running");
 // })
